@@ -144,6 +144,10 @@ int main(int argc, char** argv){
 }
 ----
 
+Abaixo temos a imagem salva após a troca de regiões.
+
+[[img-swapped]]
+.Imagem resultado da troca de regiões
 image::images/swapped.png[Imagem produzida com a troca de regiões]
 
 == 4. Preenchendo regiões
@@ -297,9 +301,12 @@ int main(int argc, char** argv) {
 }
 ----
 
-Abaixo está mostrada a imagem salva após a contagem de bolhas, no caso, 21 bolhas sendo 7 delas vazadas.
+Abaixo está mostrada a imagem salva após a contagem de bolhas, no caso, foram encontradas 21 bolhas sendo 7 delas vazadas.
 
+[[img-bubblefill]]
+.Imagem após o processamento de contagem de bolhas
 image::images/bubblefill.png[Imagem produzida com contagem de bolhas]
+
 
 == 5. Manipulação de histogramas
 
@@ -431,6 +438,10 @@ Com a imagem equalizada e seu histograma calculado, é mostrado duas janelas par
 	imshow("imageEqualized", imageEqualized);
 ----
 
+Abaixo temos as imagens original e equalizada, resultado do processamento.
+
+[[image-equalized]]
+.Imagem original e equalizada, após o processamento.
 image::images/imageEqualize1.png[Imagem equalizada]
 
 No canto superior esquerdo é mostrado o histograma da imagem. É possível perceber que a imagem equalizada apresenta um maior contraste.
@@ -588,10 +599,14 @@ A variável lastHist, no final da iteração, recebe o valor de histB, e aux rec
 	aux=compare;
 ----
 
-A Saída é mostrada a seguir:
+A saída é mostrada a seguir:
 
+[[image-motion1]]
+.Movimento detectado, teste 1.
 image::images/motion1.png[Motion 1]
 
+[[image-motion2]]
+.Movimento detectado, teste 2.
 image::images/motion2.png[Motion 2]
 
 Ao movimentar a mão, o prgrama detecta o movimento e salva o dia e a hora do evento.
@@ -789,6 +804,8 @@ int main(int argvc, char** argv){
 	return 0;
 }
 ----
+
+Abaixo as imagens produzidas com o processamento da imagem original. Destacamos que a opção de valores absolutos não surte efeito quando estão ativos os filtros da média ou gaussiano.
 
 [[img-original]]
 .Imagem original

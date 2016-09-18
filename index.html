@@ -683,10 +683,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
-<div class="imageblock">
+<div class="paragraph">
+<p>Abaixo temos a imagem salva após a troca de regiões.</p>
+</div>
+<div id="img-swapped" class="imageblock">
 <div class="content">
 <img src="images/swapped.png" alt="Imagem produzida com a troca de regiões">
 </div>
+<div class="title">Figure 1. Imagem resultado da troca de regiões</div>
 </div>
 </div>
 </div>
@@ -850,12 +854,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="paragraph">
-<p>Abaixo está mostrada a imagem salva após a contagem de bolhas, no caso, 21 bolhas sendo 7 delas vazadas.</p>
+<p>Abaixo está mostrada a imagem salva após a contagem de bolhas, no caso, foram encontradas 21 bolhas sendo 7 delas vazadas.</p>
 </div>
-<div class="imageblock">
+<div id="img-bubblefill" class="imageblock">
 <div class="content">
 <img src="images/bubblefill.png" alt="Imagem produzida com contagem de bolhas">
 </div>
+<div class="title">Figure 2. Imagem após o processamento de contagem de bolhas</div>
 </div>
 </div>
 </div>
@@ -1002,10 +1007,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 	imshow("imageEqualized", imageEqualized);</pre>
 </div>
 </div>
-<div class="imageblock">
+<div class="paragraph">
+<p>Abaixo temos as imagens original e equalizada, resultado do processamento.</p>
+</div>
+<div id="image-equalized" class="imageblock">
 <div class="content">
 <img src="images/imageEqualize1.png" alt="Imagem equalizada">
 </div>
+<div class="title">Figure 3. Imagem original e equalizada, após o processamento.</div>
 </div>
 <div class="paragraph">
 <p>No canto superior esquerdo é mostrado o histograma da imagem. É possível perceber que a imagem equalizada apresenta um maior contraste.</p>
@@ -1177,17 +1186,19 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="paragraph">
-<p>A Saída é mostrada a seguir:</p>
+<p>A saída é mostrada a seguir:</p>
 </div>
-<div class="imageblock">
+<div id="image-motion1" class="imageblock">
 <div class="content">
 <img src="images/motion1.png" alt="Motion 1">
 </div>
+<div class="title">Figure 4. Movimento detectado, teste 1.</div>
 </div>
-<div class="imageblock">
+<div id="image-motion2" class="imageblock">
 <div class="content">
 <img src="images/motion2.png" alt="Motion 2">
 </div>
+<div class="title">Figure 5. Movimento detectado, teste 2.</div>
 </div>
 <div class="paragraph">
 <p>Ao movimentar a mão, o prgrama detecta o movimento e salva o dia e a hora do evento.</p>
@@ -1390,71 +1401,74 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>Abaixo as imagens produzidas com o processamento da imagem original. Destacamos que a opção de valores absolutos não surte efeito quando estão ativos os filtros da média ou gaussiano.</p>
+</div>
 <div id="img-original" class="imageblock">
 <div class="content">
 <img src="images/original.png" alt="Original">
 </div>
-<div class="title">Figure 1. Imagem original</div>
+<div class="title">Figure 6. Imagem original</div>
 </div>
 <div id="img-gauss" class="imageblock">
 <div class="content">
 <img src="images/gauss.png" alt="Gauss">
 </div>
-<div class="title">Figure 2. Imagem com filto gaussiano</div>
+<div class="title">Figure 7. Imagem com filto gaussiano</div>
 </div>
 <div id="img-media" class="imageblock">
 <div class="content">
 <img src="images/media.png" alt="Media">
 </div>
-<div class="title">Figure 3. Imagem com filtro da média</div>
+<div class="title">Figure 8. Imagem com filtro da média</div>
 </div>
 <div id="img-vertical" class="imageblock">
 <div class="content">
 <img src="images/vertical.png" alt="Vertical">
 </div>
-<div class="title">Figure 4. Imagem com filtro vertical</div>
+<div class="title">Figure 9. Imagem com filtro vertical</div>
 </div>
 <div id="img-vertical-abs" class="imageblock">
 <div class="content">
 <img src="images/vertical-abs.png" alt="Vertical absoluto">
 </div>
-<div class="title">Figure 5. Imagem com filtro vertical (absoluto)</div>
+<div class="title">Figure 10. Imagem com filtro vertical (absoluto)</div>
 </div>
 <div id="img-horizontal" class="imageblock">
 <div class="content">
 <img src="images/horizontal.png" alt="Horizontal">
 </div>
-<div class="title">Figure 6. Imagem com filtro horizontal</div>
+<div class="title">Figure 11. Imagem com filtro horizontal</div>
 </div>
 <div id="img-horizontal-abs" class="imageblock">
 <div class="content">
 <img src="images/horizontal-abs.png" alt="Horizontal absoluto">
 </div>
-<div class="title">Figure 7. Imagem com filtro horizontal (absoluto)</div>
+<div class="title">Figure 12. Imagem com filtro horizontal (absoluto)</div>
 </div>
 <div id="img-laplaciano" class="imageblock">
 <div class="content">
 <img src="images/laplacian.png" alt="Laplaciano">
 </div>
-<div class="title">Figure 8. Imagem com filtro laplaciano</div>
+<div class="title">Figure 13. Imagem com filtro laplaciano</div>
 </div>
 <div id="img-laplaciano-abs" class="imageblock">
 <div class="content">
 <img src="images/laplacian-abs.png" alt="Laplaciano absoluto">
 </div>
-<div class="title">Figure 9. Imagem com filtro laplaciano (absoluto)</div>
+<div class="title">Figure 14. Imagem com filtro laplaciano (absoluto)</div>
 </div>
 <div id="img-laplacianogaussiano" class="imageblock">
 <div class="content">
 <img src="images/gaussian-laplacian.png" alt="Laplaciano-Gaussiano">
 </div>
-<div class="title">Figure 10. Imagem com filtro laplaciano do gaussiano</div>
+<div class="title">Figure 15. Imagem com filtro laplaciano do gaussiano</div>
 </div>
 <div id="img-laplacianogaussiano-abs" class="imageblock">
 <div class="content">
 <img src="images/gaussian-laplacian-abs.png" alt="Laplaciano-Gaussiano absoluto">
 </div>
-<div class="title">Figure 11. Imagem com filtro horizontal (absoluto)</div>
+<div class="title">Figure 16. Imagem com filtro horizontal (absoluto)</div>
 </div>
 </div>
 </div>
@@ -1507,7 +1521,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-18 02:03:39 BRT
+Last updated 2016-09-18 02:24:15 BRT
 </div>
 </div>
 </body>
