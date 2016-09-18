@@ -790,6 +790,50 @@ int main(int argvc, char** argv){
 }
 ----
 
+[[img-original]]
+.Imagem original
+image::images/original.png[Original]
+
+[[img-gauss]]
+.Imagem com filto gaussiano
+image::images/gauss.png[Gauss]
+
+[[img-media]]
+.Imagem com filtro da média
+image::images/media.png[Media]
+
+[[img-vertical]]
+.Imagem com filtro vertical
+image::images/vertical.png[Vertical]
+
+[[img-vertical-abs]]
+.Imagem com filtro vertical (absoluto)
+image::images/vertical-abs.png[Vertical absoluto]
+
+[[img-horizontal]]
+.Imagem com filtro horizontal
+image::images/horizontal.png[Horizontal]
+
+[[img-horizontal-abs]]
+.Imagem com filtro horizontal (absoluto)
+image::images/horizontal-abs.png[Horizontal absoluto]
+
+[[img-laplaciano]]
+.Imagem com filtro laplaciano
+image::images/laplacian.png[Laplaciano]
+
+[[img-laplaciano-abs]]
+.Imagem com filtro laplaciano (absoluto)
+image::images/laplacian-abs.png[Laplaciano absoluto]
+
+[[img-laplacianogaussiano]]
+.Imagem com filtro laplaciano do gaussiano
+image::images/gaussian-laplacian.png[Laplaciano-Gaussiano]
+
+[[img-laplacianogaussiano-abs]]
+.Imagem com filtro horizontal (absoluto)
+image::images/gaussian-laplacian-abs.png[Laplaciano-Gaussiano absoluto]
+
 == 7. Filtragem no domínio espacial II
 
 === Exercício 7.2.a - Efeito tiltshift estático
