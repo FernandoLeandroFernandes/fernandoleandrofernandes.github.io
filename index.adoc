@@ -1,4 +1,4 @@
-:toc:
+:toc: 
 :source-highlighter: pygments
 
 = PROCESSAMENTO DIGITAL DE IMAGENS (DCA0445)
@@ -410,9 +410,7 @@ Equalizar o histograma significa obter a máxima variância do histograma de uma
 Para calcular o histograma foi utilizado a função calcHist. Foi calculado primeiramente o histograma para o vídeo contendo imagens originais. A variável que contém a matriz com as imagens originais se chama image, do tipo Mat. A variável que contém o histograma para as imagens originais se chama histGray, do tipo Mat. No algorítmo apresentado, a linha que corresponde ao que foi explicado anteriormente é a seguinte:
 
 ----
-	calcHist(&image, 1, 0, Mat(), histGray, 1,
-	&nbins, &histrange,
-	uniform, acummulate);
+	calcHist(&image, 1, 0, Mat(), histGray, 1, &nbins, &histrange, uniform, acummulate);
 ----
 
 Já tendo em posse o histograma calculado, para realizar a equalização deste histograma foi utilizado a função equalizeHist. O primeiro parâmetro dessa função trata-se de uma variável do tipo Mat. Essa variável contém a matriz da imagem a ser equalizada. Já o segundo parâmetro trata-se do resultado, isto é, a imagem equalizada. No algorítmo apresentado, a linha que corresponde ao que foi explicado anteriormente é a seguinte:
@@ -424,9 +422,7 @@ Já tendo em posse o histograma calculado, para realizar a equalização deste h
 Após a equalização, é calculado o seu histograma:
 
 ----
-	calcHist(&imageEqualized, 1, 0, Mat(), histEqualized, 1,
-	&nbins, &histrange,
-	uniform, acummulate);
+	calcHist(&imageEqualized, 1, 0, Mat(), histEqualized, 1, &nbins, &histrange, uniform, acummulate);
 ----
 
 A variável histEqualized é do tipo Mat. Ela contém o histograma da imagem já equalizada.
@@ -549,17 +545,13 @@ int main(int argc, char** argv){
 Esse programa foi feito o calculando primeiramente o histograma para a primeira imagem capturada e salvando-o na variável chamada lastHist, do tipo Mat.
 
 ----
-	calcHist(&planes[0], 1, 0, Mat(), lastHist, 1,
-	&nbins, &histrange,
-	uniform, acummulate);
+	calcHist(&planes[0], 1, 0, Mat(), lastHist, 1, &nbins, &histrange, uniform, acummulate);
 ----
 
 A seguir, em um loop infinito, é calculado o histograma da imagem capturada atual, salvando-o na variável histB, do tipo Mat.
 
 ----
-	calcHist(&planes[0], 1, 0, Mat(), histB, 1,
-	&nbins, &histrange,
-	uniform, acummulate);
+	calcHist(&planes[0], 1, 0, Mat(), histB, 1, &nbins, &histrange, uniform, acummulate);
 ----
 
 É criado uma variável do tipo double chamada compare. Essa variável recebe o valor que a função compareHist retorna. A função compareHist serve para comparar dois histogramas. No caso do algoritmo em questão, compara o histB com lastHist.
@@ -572,9 +564,8 @@ A variável compare será calculada continuamente, para cada iteração do loop,
 
 ----
 	if(compare>(aux+34) || compare<(aux-34)){
-
-	cout << "Movimento detectado: " << currentDateTime() << std::endl;
-	cout<<endl;
+		cout << "Movimento detectado: " << currentDateTime() << std::endl;
+		cout<<endl;
 	}
 ----
 

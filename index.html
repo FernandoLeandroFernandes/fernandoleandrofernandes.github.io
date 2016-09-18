@@ -972,9 +972,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>	calcHist(&amp;image, 1, 0, Mat(), histGray, 1,
-	&amp;nbins, &amp;histrange,
-	uniform, acummulate);</pre>
+<pre>	calcHist(&amp;image, 1, 0, Mat(), histGray, 1, &amp;nbins, &amp;histrange, uniform, acummulate);</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -990,9 +988,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>	calcHist(&amp;imageEqualized, 1, 0, Mat(), histEqualized, 1,
-	&amp;nbins, &amp;histrange,
-	uniform, acummulate);</pre>
+<pre>	calcHist(&amp;imageEqualized, 1, 0, Mat(), histEqualized, 1, &amp;nbins, &amp;histrange, uniform, acummulate);</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1125,9 +1121,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>	calcHist(&amp;planes[0], 1, 0, Mat(), lastHist, 1,
-	&amp;nbins, &amp;histrange,
-	uniform, acummulate);</pre>
+<pre>	calcHist(&amp;planes[0], 1, 0, Mat(), lastHist, 1, &amp;nbins, &amp;histrange, uniform, acummulate);</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1135,9 +1129,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>	calcHist(&amp;planes[0], 1, 0, Mat(), histB, 1,
-	&amp;nbins, &amp;histrange,
-	uniform, acummulate);</pre>
+<pre>	calcHist(&amp;planes[0], 1, 0, Mat(), histB, 1, &amp;nbins, &amp;histrange, uniform, acummulate);</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1154,9 +1146,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="listingblock">
 <div class="content">
 <pre>	if(compare&gt;(aux+34) || compare&lt;(aux-34)){
-
-	cout &lt;&lt; "Movimento detectado: " &lt;&lt; currentDateTime() &lt;&lt; std::endl;
-	cout&lt;&lt;endl;
+		cout &lt;&lt; "Movimento detectado: " &lt;&lt; currentDateTime() &lt;&lt; std::endl;
+		cout&lt;&lt;endl;
 	}</pre>
 </div>
 </div>
@@ -1521,7 +1512,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-18 02:24:15 BRT
+Last updated 2016-09-18 02:38:16 BRT
 </div>
 </div>
 </body>
