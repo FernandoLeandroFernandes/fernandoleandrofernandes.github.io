@@ -10,7 +10,7 @@ Esta página é destinada à postagem dos exercícios do tutorial http://agostin
 
 Os programas foram implementados em liguagem C++, utilizando a biblioteca OpenCV versão 2.4.13 cuja instalação foi realizada utilizando o tutorial http://pythoneiro.blogspot.com.br/2014/11/instalando-opencv-no-linux-sem-dores-de.html[Instalando OpenCV no Linux sem dores de cabeça]. 
 
-Optou-se pela ferramenta CMake para a compilação dos códigos.
+TIP: Optou-se pela ferramenta CMake para a compilação dos códigos.
 
 == 3. Manipulação de pixels de uma imagem
 
