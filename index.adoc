@@ -6,7 +6,7 @@ FERNANDO LEANDRO FERNANDES <leandes@gmail.com>;GUSTAVO LINHARES GALVÃO <gustavo
 
 == Apresentação
 
-Esta página é destinada a postagem dos dos exercícios da disciplina de PROCESSAMENTO DIGITAL DE IMAGENS (DCA0445), ministrada pelo Professor Dr. Agostinho Brito Jr., do Departamento de Engenharia de Computação e Automação da Universidade Federal do Rio Grande do Norte - UFRN, no semestre de 2016.2.
+Esta página é destinada à postagem dos exercícios do tutorial http://agostinhobritojr.github.io/tutoriais/pdi/[Introdução ao processamento digital de imagens com OpenCV], desenvolvido como roteiro para a disciplina de PROCESSAMENTO DIGITAL DE IMAGENS (DCA0445), ministrada pelo Professor Dr. Agostinho Brito Jr., do Departamento de Engenharia de Computação e Automação da Universidade Federal do Rio Grande do Norte - UFRN, no semestre de 2016.2.
 
 Os programas foram implementados em liguagem C++, utilizando a biblioteca OpenCV versão 2.4.13 cuja instalação foi realizada utilizando o tutorial http://pythoneiro.blogspot.com.br/2014/11/instalando-opencv-no-linux-sem-dores-de.html[Instalando OpenCV no Linux sem dores de cabeça]. 
 
@@ -444,7 +444,7 @@ No canto superior esquerdo é mostrado o histograma da imagem. É possível perc
 
 === Exercício 5.2.b - Detecção de movimento
 
-O exercício 5.2.b pede para que se implemente um programa (motiondetector.cpp) para detectar movimento através de uma câmera conectada ao computador. Este algoritmo funciona comparando o histograma da imagem capturada com o último histograma calculado. Se a diferença ultrapassar um limiar pré-estabelecido, um alarme é ativado. A seguir está o código para esse programa.
+O exercício 5.2.b pede para que se implemente um programa (`motiondetector.cpp`) para detectar movimento através de uma câmera conectada ao computador. Este algoritmo funciona comparando o histograma da imagem capturada com o último histograma calculado. Se a diferença ultrapassar um limiar pré-estabelecido, um alarme é ativado. A seguir está o código para esse programa.
 
 [[app-listing]]
 [source,cpp]
@@ -600,7 +600,7 @@ image::images/motion1.png[Motion 1]
 .Movimento detectado, teste 2.
 image::images/motion2.png[Motion 2]
 
-Ao movimentar a mão, o prgrama detecta o movimento e salva o dia e a hora do evento.
+Ao movimentar a mão, o programa detecta o movimento e salva o dia e a hora do evento.
 
 == 6. Filtragem no domínio espacial I
 
