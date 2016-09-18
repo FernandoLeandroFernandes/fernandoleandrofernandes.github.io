@@ -72,11 +72,17 @@ int main(int argc, char** argv) {
 
 	imshow("window", image);
 
+	imwrite("inverted.png", image);
+
 	waitKey(3. );
 
 	return 0;
 }
 ----
+
+Um teste de execução foi realizado com as coordenadas P1 (10, 50) e P2 (150, 80). O resultado pode ser observado na imagem abaixo.
+
+image::images/inverted.png[Imagem produzida com a inversão]
 
 === Exercício 3.2.b - Trocar regiões da imagem
 
@@ -137,6 +143,8 @@ int main(int argc, char** argv){
   return 0;
 }
 ----
+
+image::images/swapped.png[Imagem produzida com a troca de regiões]
 
 == 4. Preenchendo regiões
 
@@ -289,11 +297,304 @@ int main(int argc, char** argv) {
 }
 ----
 
-== 5. ???
+Abaixo está mostrada a imagem salva após a contagem de bolhas, no caso, 21 bolhas sendo 7 delas vazadas.
 
-=== Exercício 5.2.a - ???
+image::images/bubblefill.png[Imagem produzida com contagem de bolhas]
 
-O exercício 5.2.a pede para que ...
+== 5. Manipulação de histogramas
+
+=== Exercício 5.2.a - Equalização do histograma
+
+O exercício 5.2.a pede para que se implemente um programa (equalize.cpp) para equalizar o histograma para cada imagem capturada do vídeo de uma câmera que está conectada ao computador. É mostrado assim, duas janelas, sendo uma com imagens originais, e outra com as imagens contendo seu histograma já equalizado. As imagens são processadas em tons de cinza. A seguir está o código para esse programa, equalize.cpp.
+
+[[app-listing]]
+[source,cpp]
+.equalize.cpp
+----
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+using namespace cv;
+using namespace std;
+
+int main(int argc, char** argv){
+  Mat image;
+  int width, height;
+  VideoCapture cap;
+
+  Mat histGray, histEqualized;
+  Mat imageEqualized;
+
+  int nbins = 64;
+  float range[] = {0, 256};
+  const float *histrange = { range };
+  bool uniform = true;
+  bool acummulate = false;
+
+
+  cap.open(0);
+
+  if(!cap.isOpened()){
+    cout << "cameras indisponiveis";
+    return -1;
+  }
+
+  width  = cap.get(CV_CAP_PROP_FRAME_WIDTH);
+  height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
+
+  cout << "largura = " << width << endl;
+  cout << "altura  = " << height << endl;
+
+  int histw = nbins, histh = nbins/2;
+
+  Mat histImgGray(histh, histw,  CV_BGR2GRAY, Scalar(0,0,0));
+  Mat histImgEqualized(histh, histw,  CV_BGR2GRAY, Scalar(0,0,0));
+
+  while(1){
+    cap >> image;
+
+    cvtColor(image, image, CV_BGR2GRAY);
+
+    calcHist(&image, 1, 0, Mat(), histGray, 1,
+             &nbins, &histrange,
+             uniform, acummulate);
+
+    normalize(histGray, histGray, 0, histImgGray.rows, NORM_MINMAX, -1, Mat());
+
+    histImgGray.setTo(Scalar(0));
+
+    equalizeHist(image, imageEqualized);
+
+    calcHist(&imageEqualized, 1, 0, Mat(), histEqualized, 1,
+             &nbins, &histrange,
+             uniform, acummulate);
+
+    normalize(histEqualized, histEqualized, 0, histImgEqualized.rows, NORM_MINMAX, -1, Mat());
+
+    histImgEqualized.setTo(Scalar(0));
+
+     for(int i=0; i<nbins; i++){
+      line(histImgGray, Point(i, histh),
+           Point(i, cvRound(histGray.at<float>(i))),
+           Scalar(255), 1, 8, 0);
+
+      line(histImgEqualized, Point(i, histh),
+           Point(i, cvRound(histEqualized.at<float>(i))),
+           Scalar(255), 1, 8, 0);
+      }
+
+    histImgGray.copyTo(image(Rect(0, 0,nbins, histh)));
+
+    histImgEqualized.copyTo(imageEqualized(Rect(0, 0,nbins, histh)));
+
+    imshow("image", image);
+    imshow("imageEqualized", imageEqualized);
+
+    if(waitKey(30) >= 0) break;
+  }
+  return 0;
+}
+----
+
+Cada pixel de uma imagem tem uma cor que foi produzida por uma combinação de cores primárias (vermelho, verde e azul, ou RGB). Cada uma dessas cores pode ter um brilho que varia de 0 a 255 em uma imagem digital com profundidade de bits de 8-bits. Um histograma RGB é produzido quando o computador varre a imagem em cada um desses valores de brilho RGB e conta quantos pixels há em cada nível de 0 a 255. Como o trabalho foi realizado com imagens processadas em tons de cinza, o histograma é apresentado de acordo com os níveis de cinza. Com o histograma calculado, é feito sua equalização.
+
+Equalizar o histograma significa obter a máxima variância do histograma de uma imagem, obtendo assim uma imagem com o melhor contraste. O contraste é uma medida qualitativa e que está relacionada com a distribuição dos tons de cinza em uma imagem.
+
+Para calcular o histograma foi utilizado a função calcHist. Foi calculado primeiramente o histograma para o vídeo contendo imagens originais. A variável que contém a matriz com as imagens originais se chama image, do tipo Mat. A variável que contém o histograma para as imagens originais se chama histGray, do tipo Mat. No algorítmo apresentado, a linha que corresponde ao que foi explicado anteriormente é a seguinte:
+
+----
+	calcHist(&image, 1, 0, Mat(), histGray, 1,
+	&nbins, &histrange,
+	uniform, acummulate);
+----
+
+Já tendo em posse o histograma calculado, para realizar a equalização deste histograma foi utilizado a função equalizeHist. O primeiro parâmetro dessa função trata-se de uma variável do tipo Mat. Essa variável contém a matriz da imagem a ser equalizada. Já o segundo parâmetro trata-se do resultado, isto é, a imagem equalizada. No algorítmo apresentado, a linha que corresponde ao que foi explicado anteriormente é a seguinte:
+
+----
+	equalizeHist(image, imageEqualized);
+----
+
+Após a equalização, é calculado o seu histograma:
+
+----
+	calcHist(&imageEqualized, 1, 0, Mat(), histEqualized, 1,
+	&nbins, &histrange,
+	uniform, acummulate);
+----
+
+A variável histEqualized é do tipo Mat. Ela contém o histograma da imagem já equalizada.
+
+Com a imagem equalizada e seu histograma calculado, é mostrado duas janelas para comparação. Uma janela com o nome image, que trata-se do vídeo original, e a outra janela com o nome imageEqualized, que trata-se do vídeo com as imagens equalizadas. As imagens são mostradas através da função imshow().
+
+----
+	imshow("image", image);
+	imshow("imageEqualized", imageEqualized);
+----
+
+image::images/imageEqualize1.png[Imagem equalizada]
+
+No canto superior esquerdo é mostrado o histograma da imagem. É possível perceber que a imagem equalizada apresenta um maior contraste.
+
+=== Exercício 5.2.b - Detecção de movimento
+
+O exercício 5.2.b pede para que se implemente um programa (motiondetector.cpp) para detectar movimento através de uma câmera conectada ao computador. Este algoritmo funciona comparando o histograma da imagem capturada com o último histograma calculado. Se a diferença ultrapassar um limiar pré-estabelecido, um alarme é ativado. A seguir está o código para esse programa.
+
+[[app-listing]]
+[source,cpp]
+.motiondetector.cpp
+----
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+using namespace cv;
+using namespace std;
+
+const string currentDateTime() {
+    time_t now = time(0);
+    struct tm  tstruct;
+    char buf[80];
+    tstruct = *localtime(&now);
+    strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+
+    return buf;
+}
+
+
+int main(int argc, char** argv){
+  Mat image;
+  int width, height;
+  VideoCapture cap;
+  vector<Mat> planes;
+  Mat histB;
+  int nbins = 64;
+  float range[] = {0, 256};
+  const float *histrange = { range };
+  bool uniform = true;
+  bool acummulate = false;
+
+  Mat lastHist;
+  double aux=0;
+
+  cap.open(0);
+
+  if(!cap.isOpened()){
+    cout << "cameras indisponiveis";
+    return -1;
+  }
+
+  width  = cap.get(CV_CAP_PROP_FRAME_WIDTH);
+  height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
+
+  cout << "largura = " << width << endl;
+  cout << "altura  = " << height << endl;
+
+  int histw = nbins, histh = nbins/2;
+  Mat histImgR(histh, histw, CV_8UC3, Scalar(0,0,0));
+
+  cap >> image;
+  split (image, planes);
+  calcHist(&planes[0], 1, 0, Mat(), lastHist, 1,
+           &nbins, &histrange,
+           uniform, acummulate);
+
+  while(1){
+    cap >> image;
+    split (image, planes);
+    calcHist(&planes[0], 1, 0, Mat(), histB, 1,
+             &nbins, &histrange,
+             uniform, acummulate);
+
+    normalize(histB, histB, 0, histImgR.rows, NORM_MINMAX, -1, Mat());
+
+    histImgR.setTo(Scalar(0));
+
+    for(int i=0; i<nbins; i++){
+      line(histImgR, Point(i, histh),
+           Point(i, cvRound(histB.at<float>(i))),
+           Scalar(255, 0, 0), 1, 8, 0);
+    }
+
+    double compare = compareHist(histB, lastHist, CV_COMP_INTERSECT);
+
+    //CV_COMP_INTERSECT
+    if(compare>(aux+34) || compare<(aux-34)){
+
+      cout << "Movimento detectado: " << currentDateTime() << std::endl;
+      cout<<endl;
+    }
+
+    histImgR.copyTo(image(Rect(0, 0,nbins, histh)));
+
+    imshow("image", image);
+    if(waitKey(30) >= 0) break;
+
+    lastHist=histB;
+    aux=compare;
+  }
+  return 0;
+}
+----
+
+Esse programa foi feito o calculando primeiramente o histograma para a primeira imagem capturada e salvando-o na variável chamada lastHist, do tipo Mat.
+
+----
+	calcHist(&planes[0], 1, 0, Mat(), lastHist, 1,
+	&nbins, &histrange,
+	uniform, acummulate);
+----
+
+A seguir, em um loop infinito, é calculado o histograma da imagem capturada atual, salvando-o na variável histB, do tipo Mat.
+
+----
+	calcHist(&planes[0], 1, 0, Mat(), histB, 1,
+	&nbins, &histrange,
+	uniform, acummulate);
+----
+
+É criado uma variável do tipo double chamada compare. Essa variável recebe o valor que a função compareHist retorna. A função compareHist serve para comparar dois histogramas. No caso do algoritmo em questão, compara o histB com lastHist.
+
+----
+	double compare = compareHist(histB, lastHist, CV_COMP_INTERSECT);
+----
+
+A variável compare será calculada continuamente, para cada iteração do loop, sempre calculando a diferença entre o histograma atual e o histograma anterior. A variável aux serve para salvar o último valor da variável compare. Se a diferença entre compare e aux for maior que 34 ou menor que -34, é detectado o movimento e é salvado o dia e a hora do ocorrido.
+
+----
+	if(compare>(aux+34) || compare<(aux-34)){
+
+	cout << "Movimento detectado: " << currentDateTime() << std::endl;
+	cout<<endl;
+	}
+----
+
+A função currentDateTime() serve para imprimir o dia e a hora atual.
+
+----
+	const string currentDateTime() {
+	    time_t now = time(0);
+	    struct tm  tstruct;
+	    char buf[80];
+	    tstruct = *localtime(&now);
+	    strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+
+	    return buf;
+}
+----
+
+A variável lastHist, no final da iteração, recebe o valor de histB, e aux recebe o valor de compare, para assim, ao começar outra iteração, essas variáveis estarem com o valor anterior das respectivas variáveis.
+
+----
+	lastHist=histB;
+	aux=compare;
+----
+
+A Saída é mostrada a seguir:
+
+image::images/motion1.png[Motion 1]
+
+image::images/motion2.png[Motion 2]
+
+Ao movimentar a mão, o prgrama detecta o movimento e salva o dia e a hora do evento.
 
 == 6. Filtragem no domínio espacial I
 
@@ -491,9 +792,9 @@ int main(int argvc, char** argv){
 
 == 7. Filtragem no domínio espacial II
 
-=== Exercício 7.2.a - Efeito tiltshift estatico
+=== Exercício 7.2.a - Efeito tiltshift estático
 
-O exercício 7.2.a pede para que, tomando como base o programa http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/addweighted.cpp[addweighted.cpp], seja implementado um programa que simule o efeito de lentes tiltshift em imagens estaticas.  Três ajustes devem ser providos na tela da interface:
+O exercício 7.2.a pede para que, tomando como base o programa http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/addweighted.cpp[addweighted.cpp], seja implementado um programa que simule o efeito de lentes tiltshift em imagens estáticas.  Três ajustes devem ser providos na tela da interface:
 
 - um ajuste para regular a altura da região central que entrará em foco;
 
@@ -510,9 +811,9 @@ Finalizado o programa, a imagem produzida deverá ser salva em arquivo.
 ----
 ----
 
-=== Exercício 7.2.b - Efeito tiltshift dinamico
+=== Exercício 7.2.b - Efeito tiltshift dinâmico
 
-O exercício 7.2.b pede para que seja implementado um programa que simule o efeito de lentes tiltshift em video. Os mesmos outros requisitos do exercicio anterior se aplicam.
+O exercício 7.2.b pede para que seja implementado um programa que simule o efeito de lentes tiltshift em video. Os mesmos outros requisitos do exercício anterior se aplicam.
 
 [[app-listing]]
 [source,cpp]
