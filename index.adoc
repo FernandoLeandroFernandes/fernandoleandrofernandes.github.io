@@ -1,0 +1,521 @@
+:toc:
+:source-highlighter: pygments
+
+= PROCESSAMENTO DIGITAL DE IMAGENS (DCA0445)
+FERNANDO LEANDRO FERNANDES <leandes@gmail.com>;GUSTAVO LINHARES GALVÃO <gustavolinhares1995@gmail.com>
+
+== Apresentação
+
+Esta página é destinada a postagem dos dos exercícios da disciplina de PROCESSAMENTO DIGITAL DE IMAGENS (DCA0445), ministrada pelo Professor Dr. Agostinho Brito Jr., do Departamento de Engenharia de Computação e Automação da Universidade Federal do Rio Grande do Norte - UFRN, no semestre de 2016.2.
+
+Os programas foram implementados em liguagem C++, utilizando a biblioteca OpenCV versão 2.4.13 cuja instalação foi realizada utilizando o tutorial http://pythoneiro.blogspot.com.br/2014/11/instalando-opencv-no-linux-sem-dores-de.html[Instalando OpenCV no Linux sem dores de cabeça]. 
+
+Optou-se pela ferramenta CMake para a compilação dos códigos.
+
+== 3. Manipulação de pixels de uma imagem
+
+=== Exercício 3.2.a - Negativo de uma região da imagem
+
+O exercício 3.2.a pede para implementar um programa (regions.cpp) que solicite ao usuário as coordenadas de dois pontos P1 e P2 localizados dentro dos limites do tamanho da imagem que lhe for fornecida. A região definida pelo retângulo de vértices opostos definidos pelos pontos P1 e P2 será exibida com o negativo da imagem na região correspondente.
+
+A implementação proposta recebe o nome do arquivo da imagem no parâmetro ''argv[1]'', abre-a, obtém as coordenadas os pontos P1 e P2 e procede à manipulação dos pixels da região delimitada pelos dois pontos informados. Para cada pixel calcula-se o seu inverso, p(x,y) = 255-p(x,y), onde p(x,y) refere-se ao pixel na linha x, coluna y. A listagem abaixo mostra o código que foi implementado.
+
+[[app-listing]]
+[source,cpp]
+.regions.cpp
+----
+#include <iostream>
+#include <highgui.h>
+#include <cv.h>
+
+using namespace std;
+using namespace cv;
+
+int main(int argc, char** argv) {
+
+	Mat image;
+	Vec3b val;
+	int x1, x2, y1, y2, m;
+
+	image= imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
+
+	if(!image.data) {
+		cout << "Falha ao abrir " << argv[1] << "..." << endl;
+		waitKey();
+	}
+
+	cout<<"Informe as coordenadas de P1 (x,y): ";
+	cin>>x1>>y1;
+
+	cout<<"Informe as coordenadas de P2 (x,y): ";
+	cin>>x2>>y2;
+
+	if(x1 > x2) {
+		m = x2;
+		x2 = x1;
+		x1 = m;
+	}
+
+	if(y1 > y2) {
+		m = y2;
+		y2 = y1;
+		y1 = m;
+	}
+
+	for(int i=x1; i < x2; i++){
+		for(int j=y1; j < y2; j++){
+			image.at<uchar>(i,j) -= -255;
+		}
+	}
+
+	namedWindow("window", WINDOW_AUTOSIZE);
+
+	imshow("window", image);
+
+	waitKey(3. );
+
+	return 0;
+}
+----
+
+=== Exercício 3.2.b - Trocar regiões da imagem
+
+O exercício 3.2.b pede para implementar um programa (trocaregioes.cpp) que deverá trocar (reposicionar) aleatoriamente regiões da imagem, formando uma espécie de quebra-cabeças.
+
+A implementação realizada obtém o nome do arquivo da imagem do parâmetro ''argv[1]'' fornecido na linha de comando, abre-a, randomiza um percentual da altura e da largura para a realização da separação das regiões. A listagem abaixo mostra o código que foi implementado.
+
+[[app-listing]]
+[source,cpp]
+.trocaregioes.cpp
+----
+#include <iostream>
+#include <cv.h>
+#include <highgui.h>
+#include <stdlib.h>
+#include <time.h>
+
+using namespace cv;
+using namespace std;
+
+int main(int argc, char** argv){
+
+  Mat image;
+
+  int width, height;
+
+  image = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
+  if (!image.data) {
+    cout << "Falha do abrir " << argv[1] << ", verifique o caminho para o aquivo." << endl;
+    waitKey();
+  }
+
+  namedWindow("window",WINDOW_AUTOSIZE);
+
+  width=image.size().width;
+  cout<<"Largura: " << width << endl;
+
+  height=image.size().height;
+  cout<<"Altura: " << height << endl;
+
+  Mat swapimage(height, width, CV_LOAD_IMAGE_GRAYSCALE);
+
+  srand((unsigned) time(NULL));
+  int point = rand()%(height < width ? height : width);
+
+  for (int i = 0; i < height; i++) {
+    for (int j = 0; j < width; j++) {
+      swapimage.at<uchar>(i,j) = image.at<uchar>(((i+point) % height), ((j+point) % width));
+    }
+  }
+
+  imshow("window", swapimage);
+
+  imwrite("swapped.png",swapimage);
+
+  waitKey();
+
+  return 0;
+}
+----
+
+== 4. Preenchendo regiões
+
+=== Exercício 4.2.a - Rotulação com mais de 255 objetos
+
+O exercício 4.2.a pede para que se identifique a situação em que ocorre problemas no processo de rotulação no programa labeling.cpp e apresentar uma solução para o problema de rotulação de mais regiões que a quantidade de valores disponível.
+
+O programa labeling.cpp fornecido rotula cada objeto encontrado com um tom de cinza. Os computadores representam intensidade de brilho em valores que variam entre 0 e 255. Portanto, quando há mais do que 255 elementos a representar, o algoritmo  fica comprometido pela falta de níveis disponíveis para rotulação dos objetos restantes.
+
+A solução proposta é a simples modulação da variável `bubbles`, que conta a quantidade de bolhas, pela quantidade de níveis possíveis, 255. Assim a contagem não é alterada e os valores de nível de cinza são atribuídos sem os problemas antes apresentados. O trecho de código abaixo implementa a solução proposta:
+
+----
+   floodFill(image, p, bubbles % 255);
+----
+
+=== Exercício 4.2.b - Contagem de bolhas
+
+O exercício 4.2.b pede para que se aprimore o algoritmo de contagem apresentado (labeling.cpp) para identificar regiões com ou sem buracos internos que existam na cena.
+
+A solução proposta é a simples modulação da variável `bubbles`, que conta a quantidade de bolhas, pela quantidade de níveis possíveis, 255. Assim a contagem não é alterada e os valores de nível de cinza são atribuídos sem os problemas antes apresentados. O trecho de código abaixo implementa a solução proposta:
+
+[[app-listing]]
+[source,cpp]
+.bubblefill.cpp
+----
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+using namespace cv;
+using namespace std;
+
+int main(int argc, char** argv) {
+
+	int ORIGINAL_BGROUND = 0;
+	int EXPLORED_BGROUND = 150;
+
+	int ORIGINAL_BUBBLE = 255;
+	int EXPLORED_BUBBLE = 152;
+
+	Mat image, mask;
+	CvPoint point;
+
+	int width, height;
+	int bubbles=0, holes=0;
+
+	image = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
+
+	if(!image.data){
+		cout << "Falha ao carregar a imagem " << argv[1] << "." << endl;
+		return(-1);
+	}
+
+	width = image.size().width;
+	height = image.size().height;
+
+	// boder cleaning ----------------------------------------
+	int k = 0;
+	while (k < height) {
+
+		point.y = k;
+
+		point.x = 0;
+		if (image.at<uchar>(point) == ORIGINAL_BUBBLE) {
+			floodFill(image, point, ORIGINAL_BGROUND);
+		}
+
+		point.x = width-1;
+		if (image.at<uchar>(point) == ORIGINAL_BUBBLE) {
+			floodFill(image, point, ORIGINAL_BGROUND);
+		}
+
+		k++;
+	}
+
+
+	k = 1;
+	while (k < width-1) {
+
+		point.x = k;
+
+		point.y = 0;
+		if (image.at<uchar>(point) == ORIGINAL_BUBBLE) {
+			floodFill(image, point, ORIGINAL_BGROUND);
+		}
+
+		point.y = height-1;
+		if (image.at<uchar>(point) == ORIGINAL_BUBBLE) {
+			floodFill(image, point, ORIGINAL_BGROUND);
+		}
+
+		k++;
+	}
+
+
+	// counting bubbles ----------------------------------------
+
+	for(int i = 0; i < height; i++){
+		for(int j = 0; j < width; j++){
+
+			if (image.at<uchar>(i,j) == ORIGINAL_BUBBLE){
+				bubbles++;
+				point.x = j;
+				point.y = i;
+				floodFill(image, point, bubbles % 100);
+			}
+		}
+	}
+
+	// coloring the background ---------------------------------
+
+	point.x=0;
+	point.y=0;
+	floodFill(image, point, EXPLORED_BGROUND);
+
+	// counting the holes --------------------------------------
+
+	int previouspix;
+
+	for(int i = 0; i < height; i++){
+		for(int j = 0; j < width; j++){
+
+			if (image.at<uchar>(i,j) == ORIGINAL_BGROUND) {
+
+				previouspix = image.at<uchar>(i,j-1);
+
+				if (previouspix < 100) {
+					holes++;
+					point.x = j-1;
+					point.y = i;
+					floodFill(image, point, 255-previouspix);
+				}
+
+				point.x = j;
+				point.y = i;
+				floodFill(image, point, EXPLORED_BGROUND);
+			}
+		}
+	}
+
+	cout << "Bolhas solidas: "<< (bubbles - holes) <<"\n";
+	cout << "Bolhas vazadas: "<< holes <<"\n";
+	
+	imshow("image", image);
+	
+	imwrite("bubblefill.png", image);
+	
+	waitKey();
+	
+	return 0;
+}
+----
+
+== 5. ???
+
+=== Exercício 5.2.a - ???
+
+O exercício 5.2.a pede para que ...
+
+== 6. Filtragem no domínio espacial I
+
+=== Exercício 6.2.a - Filtro laplaciano do gaussiano
+
+O exercício 6.2.a pede para que, utilizando o programa exemplos/filtroespacial.cpp como referência, implemente um programa laplgauss.cpp que deverá acrescentar mais uma funcionalidade ao exemplo fornecido, permitindo que seja calculado o laplaciano do gaussiano das imagens capturadas. Ao fim, comparar o resultado desse filtro com a simples aplicação do filtro laplaciano.
+
+[[app-listing]]
+[source,cpp]
+.laplgauss.cpp
+----
+#include <cstdio>
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+using namespace cv;
+using namespace std;
+
+void printmask(Mat &m){
+	
+	cout << "\nMascara atual\n";
+	
+	for(int i=0; i<m.size().height; i++){
+		cout << "|\t";
+		for(int j=0; j<m.size().width; j++){
+			printf("%.2f\t", m.at<float>(i,j));
+		}
+		cout << "|\n";
+	}
+
+	cout << endl;
+}
+
+void print_menu(){
+
+	cout << 
+	    "\nPressione a tecla correspondente ao filtro desejado: \n"
+		"c/C - Ativar/desativar modo modular\n"
+		"m/M - Filtro mediano\n"
+		"g/G - Filtro gaussano\n"
+		"v/V - Filtro vertical\n"
+		"h/H - Filtro horizontal\n"
+		"l/L - Filtro laplaciano\n"
+		"q/Q - Filtro laplaciano do gaussiano\n"
+		"[ESC] - Sair\n\n";
+}
+
+int main(int argvc, char** argv){
+	
+	char const ESC_KEY = 27;
+
+	VideoCapture video;
+
+	video.open(0);
+
+	if (!video.isOpened()) {
+		return -1;
+	}
+	
+	float average[] =	{
+						1, 1, 1,
+						1, 1, 1,
+						1, 1, 1
+						};
+	Mat average_mask = Mat(3, 3, CV_32F, average);
+	average_mask = average_mask * (1/9.0);
+
+	float gauss[] = {
+					1, 2, 1,
+					2, 4, 2,
+					1, 2, 1
+					};
+	Mat gauss_mask = Mat(3, 3, CV_32F, gauss);
+	gauss_mask = gauss_mask * (1/16.0);
+
+	float horizontal[] = {
+						 -1, 0, 1,
+						 -2, 0, 2,
+						 -1, 0, 1
+						 };
+	Mat horizontal_mask = Mat(3, 3, CV_32F, horizontal);
+
+	float vertical[] =	{
+						-1,-2,-1,
+						 0, 0, 0,
+						 1, 2, 1
+						};
+	Mat vertical_mask = Mat(3, 3, CV_32F, vertical);
+
+	float laplacian[]=	{
+						 0,-1, 0,
+						-1, 4,-1,
+						 0,-1, 0,
+						};
+	Mat laplacian_mask = Mat(3, 3, CV_32F, laplacian);
+
+
+	Mat mask = average_mask;
+
+	Mat capture, frame, frame32f, frameFiltered, result;
+	int absolut_mode = true;
+	int additional_laplacian_step = false;
+	int key;
+
+	double width, height;
+	width  = video.get(CV_CAP_PROP_FRAME_WIDTH);
+	height = video.get(CV_CAP_PROP_FRAME_HEIGHT);
+	cout << "largura=" << width << "\n";;
+	cout << "altura =" << height<< "\n";;
+
+	namedWindow("filtroespacial",1);
+
+	print_menu();
+
+	while (key != ESC_KEY) {
+			
+		video >> capture;
+
+		// Manipulacoes do frame capturado
+		cvtColor(capture, frame, CV_BGR2GRAY);
+		flip(frame, frame, 1);
+		imshow("original", frame);
+
+		frame.convertTo(frame32f, CV_32F);
+
+		// Aplica o filtro espacial selecionado (mask)		
+		filter2D(frame32f, frameFiltered, frame32f.depth(), mask, Point(1,1), 0);
+		
+		if (additional_laplacian_step) {
+			filter2D( frameFiltered, frameFiltered, frame32f.depth(), laplacian_mask, Point(1,1), 0);
+		}
+
+		if (absolut_mode) {
+			frameFiltered = abs(frameFiltered);
+		}
+
+		frameFiltered.convertTo(result, CV_8U);
+		
+		imshow("filtroespacial", result);
+		
+		key = waitKey(10);
+
+		if (key == 'c' || key == 'C' ||
+			key == 'm' || key == 'M' ||
+			key == 'g' || key == 'G' || 
+			key == 'q' || key == 'Q' ||
+			key == 'h' || key == 'H' ||
+			key == 'v' || key == 'V' ||
+			key == 'l' || key == 'L') {
+
+			print_menu();
+
+			if (key == 'c' || key == 'C') {
+				absolut_mode = !absolut_mode;
+				cout << "Modo absoluto " << (absolut_mode ? "ativado" : "desativado") << endl;
+
+			} else if (key == 'm' || key == 'M') {
+				mask = average_mask;
+				additional_laplacian_step = false;
+				cout << "Filtro da media ativado." << endl;
+
+			} else if (key == 'g' || key == 'G') {
+				mask = gauss_mask;
+				additional_laplacian_step = false;
+				cout << "Filtro gaussiano ativado." << endl;
+
+			} else if (key == 'h' || key == 'H') {
+				mask = horizontal_mask;
+				additional_laplacian_step = false;
+				cout << "Filtro da horizontal ativado." << endl;
+
+			} else if (key == 'v' || key == 'V') {
+				mask = vertical_mask;
+				additional_laplacian_step = false;
+				cout << "Filtro da vertical ativado." << endl;
+
+			} else if (key == 'l' || key == 'L') {
+				mask = laplacian_mask;
+				additional_laplacian_step = false;
+				cout << "Filtro da laplaciano ativado." << endl;
+
+			} else if (key == 'q' || key == 'Q') {
+				mask = gauss_mask;
+				additional_laplacian_step = true;
+				cout << "Filtro laplaciano do gaussiano ativado." << endl;
+
+			}
+
+			printmask(mask);
+		}
+	}
+	return 0;
+}
+----
+
+== 7. Filtragem no domínio espacial II
+
+=== Exercício 7.2.a - Efeito tiltshift estatico
+
+O exercício 7.2.a pede para que, tomando como base o programa http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/addweighted.cpp[addweighted.cpp], seja implementado um programa que simule o efeito de lentes tiltshift em imagens estaticas.  Três ajustes devem ser providos na tela da interface:
+
+- um ajuste para regular a altura da região central que entrará em foco;
+
+- um ajuste para regular a força de decaimento da região borrada;
+
+- um ajuste para regular a posição vertical do centro da região que entrará em foco. 
+
+Finalizado o programa, a imagem produzida deverá ser salva em arquivo.
+
+
+[[app-listing]]
+[source,cpp]
+.tiltshift.cpp
+----
+----
+
+=== Exercício 7.2.b - Efeito tiltshift dinamico
+
+O exercício 7.2.b pede para que seja implementado um programa que simule o efeito de lentes tiltshift em video. Os mesmos outros requisitos do exercicio anterior se aplicam.
+
+[[app-listing]]
+[source,cpp]
+.tiltshiftvideo.cpp
+----
+----
