@@ -877,7 +877,24 @@ O exercício 7.2.b pede para que seja implementado um programa que simule o efei
 
 === Exercício 8.2 - Filtragem homomófica
 
-O exercício 6.2.a pede para que, utilizando o programa exemplos/filtroespacial.cpp como referência, implemente um programa laplgauss.cpp que deverá acrescentar mais uma funcionalidade ao exemplo fornecido, permitindo que seja calculado o laplaciano do gaussiano das imagens capturadas. Ao fim, comparar o resultado desse filtro com a simples aplicação do filtro laplaciano.
+O exercício 8.2 pede para que se implemente um filtro homomórfico para melhorar imagens com iluminação irregular. A entrada do programa é uma imagem mal iluminada, e a saída é uma imagem com o filtro homomórfico aplicado e, como esperado, iluminação corrigida.
+
+O filtro homomórfico atenua as frequências baixas, caracterísitica da iluminação e aplica um ganho às frequências altas. Para isso, é necessário separar a iluminância da reflectância. Essa filtragem se realiza, suscintamente, calculado o logarítmo da imagem, para assim, aplicar a Transformada Discreta de Fourier (Discrete Fourier Transform _ DFT) para, então, aplicar a filtragem homomórfica.
+
+A função de transferência do filtro homomórfico é dada pela seguinte expressão:
+
+Fórmula de H(u,v)
+
+D(u,v) se dá pela seguinte fórmula:
+
+Fórmula de D(u,v)
+
+GamaH é o limite superior da atenuação do filtro e GamaL é o limite inferior. D0 é o raio do filtro.
+
+Após a aplicação do filtro, calculou-se a Transformada Discreta Inversa de Fourier (Inverse Discrete Fourier Transform - IDFT), normalizou-se os elementos da imagem para valores de 0 a 1. 
+
+Para retormar a imagem da escala logarítmica calculou-se a exponencial da imagem e, novamente, a normalizou. Os resultados obtidos foram os seguintes:
+
 
 [[app-listing]]
 [source,cpp]
@@ -1125,13 +1142,24 @@ int main(int argc, char** argv) {
 }
 ----
 
-== 9. Detecção de bordas com o algoritmo de Canny
+[[image-tunel-shades]]
+.Imagem original usada na filtragem homomórfica.
+image::images/tunnel-480.png[Imagem original]
+
+[[image-NYC-points]]
+.Imagem obtida após a filtragem homomórfica.
+image::images/tunel-homomorphic.png[Imagem filtrada]
+
+Para a imagem acima, foram utilizados os seguintes parâmetros: Ganho(c): 0.5, Gama-low (Gl): 0.5, Gama-high(Gh): 0.8, Raio: 8.
+O resultado obtido atende ao esperado, corrigindo a iluminação deficiente da imagem original.
 
 == 10. Canny e a arte com pontilhismo
 
 === Exercício 10.2 - Filtragem homomófica
 
-O exercício 6.2.a pede para que, utilizando o programa exemplos/filtroespacial.cpp como referência, implemente um programa laplgauss.cpp que deverá acrescentar mais uma funcionalidade ao exemplo fornecido, permitindo que seja calculado o laplaciano do gaussiano das imagens capturadas. Ao fim, comparar o resultado desse filtro com a simples aplicação do filtro laplaciano.
+O exercício 10 pede para que, utilizando programas de exemplo (canny.cpp e pontilhismo.cpp) como referência, se implementasse um programa cannypoints.cpp que simule a técnica de pintura artística conhecida como pontilhismo que as imagens são compostas com pontos utilizando as bordas produzidas pelo algoritmo de Canny para melhorar a qualidade da imagem pontilhista gerada. Ao fim, descrever detalhes do procedimento usado para criar sua técnica pontilhista.
+
+A implementação desenvolvida para a resolução do problema proposto foi o seguinte:
 
 [[app-listing]]
 [source,cpp]
@@ -1158,18 +1186,18 @@ O exercício 6.2.a pede para que, utilizando o programa exemplos/filtroespacial.
 using namespace std;
 using namespace cv;
 
-int top_slider = 10;
-int top_slider_max = 200;
+int threshld = 10;
+int THRESHOLD_MAX = 200;
 
 //STEP define o passo usado para varrer a imagem de referência
-int STEP = 1;
-int STEP_max = 8;
+int step = 1;
+int STEP_MAX = 8;
 
-int JITTER = 2;
-int JITTER_max = 15;
+int jitter = 2;
+int JITTER_MAX = 15;
 
-int RAIO = 1;
-int RAIO_max = 8;
+int radius = 1;
+int RADIUS_MAX = 8;
 
 Mat cannyPoints;
 Mat image, border;
@@ -1177,45 +1205,43 @@ Mat image, border;
 void processCannyParameters(int, void*) {
 
   int x, y;
-
   int width  = image.size().width;
   int height = image.size().height;
 
   // Determina os contornos usando os algorirmo de Canny
-  Canny(image, border, top_slider, 3*top_slider);
+  Canny(image, border, threshld, 3 * threshld);
   
   imshow("canny", border);
 
   // Limita o STEP e o JITTER a 1.
-  STEP = (STEP < 1 ? 1 : STEP);
-  JITTER = (JITTER < 1 ? 1 : JITTER);
+  step = (step < 1 ? 1 : step);
+  jitter = (jitter < 1 ? 1 : jitter);
 
   // calcula parametros fixos para otimizar a execucao
-  float halfSTEP = (STEP/2);
-  int oneJITTER = (JITTER + 1);
-  int doubleJITTER = (2*JITTER);
+  float halfSTEP = (step/2);
+  int oneJITTER = (jitter + 1);
+  int doubleJITTER = (2*jitter);
 
   // Inicializa o vetor xrange com um ganho igual 
   // ... a STEP e um deslocamento STEP/2
   vector<int> xrange;
-  xrange.resize(height/STEP);
+  xrange.resize(height/step);
   for (uint i = 0; i < xrange.size(); i++) {
-    xrange[i] = (i * STEP) + halfSTEP;
+    xrange[i] = (i * step) + halfSTEP;
   }
 
   // Inicializa o vetor xrange com um ganho igual 
   // ... a STEP e um deslocamento STEP/2
   vector<int> yrange;
-  yrange.resize(width/STEP);
+  yrange.resize(width/step);
   for (uint i = 0; i < yrange.size(); i++) {
-    yrange[i] = (i * STEP) + halfSTEP;
+    yrange[i] = (i * step) + halfSTEP;
   }
 
   cannyPoints = Mat(height, width, CV_8UC3, Scalar(255, 255, 255));
 
   // randomizacao dos elementos do range em X
   random_shuffle(xrange.begin(), xrange.end());
-
 
   for (auto i : xrange) {
 
@@ -1233,7 +1259,7 @@ void processCannyParameters(int, void*) {
       // ... da imagem. Observe o 'swap' dos valores BGR para RGB
       circle( cannyPoints, 
           cv::Point(y, x), 
-          RAIO, 
+          radius, 
           CV_RGB(
             // Obtem a cor do ponto (x,y) da imagem.
             (int)(image.at<Vec3b>(x,y)[2]), 
@@ -1244,7 +1270,8 @@ void processCannyParameters(int, void*) {
     }
   }
 
-  // Desenho dos pontos da borda da imagem (OPCIONAL)
+  // Desenho dos pontos da borda da imagem para melhoria 
+  // ... das características da imagem pontilhizada gerada
   for (int i = 0; i < height; i+=2 ) {
 
     for (int j = 0; j < width; j+=2) {
@@ -1253,7 +1280,7 @@ void processCannyParameters(int, void*) {
 
         circle( cannyPoints, 
             cv::Point(j,i), 
-            RAIO/2, 
+            radius/2, 
             CV_RGB(
               (int)(image.at<Vec3b>(i,j)[2]), 
               (int)(image.at<Vec3b>(i,j)[1]), 
@@ -1277,32 +1304,55 @@ int main(int argc, char**argv) {
 
 
   createTrackbar("LIMIAR", "Canny", 
-          &top_slider, 
-          top_slider_max, 
+          &threshld, 
+          THRESHOLD_MAX, 
           processCannyParameters);
 
   createTrackbar("PASSO", "Canny", 
-          &STEP, 
-          STEP_max, 
+          &step, 
+          STEP_MAX, 
           processCannyParameters);
 
   createTrackbar("JITTER", "Canny", 
-          &JITTER, 
-          JITTER_max, 
+          &jitter, 
+          JITTER_MAX, 
           processCannyParameters);
 
   createTrackbar("RAIO", "Canny", 
-          &RAIO, 
-          RAIO_max, 
+          &radius, 
+          RADIUS_MAX, 
           processCannyParameters);
 
-
-  processCannyParameters(top_slider, 0 );
+  processCannyParameters(threshld, 0 );
 
   imwrite("canny.jpg", cannyPoints);
 
-  waitKey();
+   do {} while ((char)waitKey(10) != 27);
 
   return 0;
 }
 ----
+
+Observou-se que círculos com raio muito grande geravam um excesso artificial na marcação dos contornos da imagem. Assim, optou-se por reduzir o raio dos círculos pela metade assim como a frequência dos pontos desenhados, também pela metada.
+
+Abaixo temos as imagens original e equalizada, resultado do processamento com a técnica pontilhista desenvolvida.
+
+[[image-tunnel]]
+.Imagem original de um túnel usada na técnica de pontilhismo antes do processamento.
+image::images/tunnel-480.png[Imagem original]
+
+[[image-tunnel-points]]
+.Imagem do túnel obtida da técnica de pontilhismo.
+image::images/tunnel-points.png[Imagem pontilhizada]
+
+Ressaltamos a característica de semelhança com uma pintura aplicando a técnica simulada sem, entretanto sobrecarregar com pontilhado as bordas da imagem e mantendo a similaridade desejada.
+
+[[image-NYC]]
+.Imagem original da cidade de Nova York usada na técnica de pontilhismo antes do processamento.
+image::images/NYC.jpg[Imagem original]
+
+[[image-NYC-points]]
+.Imagem da cidade de Nova York obtida da técnica de pontilhismo.
+image::images/NYC-points.jpg[Imagem pontilhizada]
+
+
