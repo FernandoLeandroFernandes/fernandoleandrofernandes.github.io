@@ -872,3 +872,437 @@ O exercício 7.2.b pede para que seja implementado um programa que simule o efei
 .tiltshiftvideo.cpp
 ----
 ----
+
+== 8. Filtragem no domínio da frequência
+
+=== Exercício 8.2 - Filtragem homomófica
+
+O exercício 6.2.a pede para que, utilizando o programa exemplos/filtroespacial.cpp como referência, implemente um programa laplgauss.cpp que deverá acrescentar mais uma funcionalidade ao exemplo fornecido, permitindo que seja calculado o laplaciano do gaussiano das imagens capturadas. Ao fim, comparar o resultado desse filtro com a simples aplicação do filtro laplaciano.
+
+[[app-listing]]
+[source,cpp]
+.dft.cpp
+----
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <opencv2/opencv.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <iostream>
+
+using namespace std;
+using namespace cv;
+
+// FILTER PARAMETERS
+int K = 5;
+int RADIUS_SLIDER = 80;
+int GAMMA_LOW_SLIDER = 5;
+int GAMMA_HIGH_SLIDER = 20;
+
+// FILTER LIMITS
+int MAX_K = 1000;
+int MAX_RADIUS = 1000;
+int MAX_GAMMA_LOW = 1000;
+int MAX_GAMMA_HIGH = 1000;
+
+char trackbar[50];
+
+vector<Mat> complexComponents;
+Mat loadedImage, complexImage, filter;
+Mat_<float> realComponent, imaginaryComponent;
+
+int originalWidth, originalHeight;
+int optimalWidth,  optimalHeight;
+
+void swapQuadrants(Mat& image) {
+
+  Mat buffer, A, B, C, D;
+
+  // se a imagem tiver tamanho impar, recorta a regiao 
+  // para evitar cópias de tamanho desigual
+  // image = image(Rect(0, 0, image.cols & -2, image.rows & -2));
+  int cx = image.cols / 2;
+  int cy = image.rows / 2;
+
+  int ox = image.cols - cx;
+  int oy = image.rows - cy;
+
+  // reorganiza os quadrantes da transformada
+  // A B   -> D C
+  // C D    B A
+  A = image(Rect(0, 0, cx, cy));
+  B = image(Rect(cx, 0, ox, cy));
+  C = image(Rect(0, cy, cx, oy));
+  D = image(Rect(cx, cy, ox, oy));
+
+  // A <-> D
+  A.copyTo(buffer);
+  D.copyTo(A);
+  buffer.copyTo(D);
+
+  // C <-> B
+  C.copyTo(buffer);
+  B.copyTo(C);
+  buffer.copyTo(B);
+}
+
+void makeBorder(
+    Mat& image, 
+    Mat& bordedImage, 
+    int& actualHeight, 
+    int& actualWidth, 
+    int& optimalHeight, 
+    int& optimalWidth) {
+
+  // obtem os tamanhos otimos para calculo do FFT
+  optimalHeight = getOptimalDFTSize(image.rows);
+  optimalWidth  = getOptimalDFTSize(image.cols);
+
+  // realiza o padding da imagem
+  cv::copyMakeBorder( image, bordedImage, 0,
+            optimalHeight - actualHeight, 0,
+            optimalWidth - actualWidth,
+            BORDER_CONSTANT, Scalar::all(0));
+
+  // prepara a matriz complexa para ser preenchida
+  complexImage = Mat(image.size(), CV_32FC2, Scalar(0));
+
+  // parte imaginaria da matriz complexa (preenchida com imag)
+  imaginaryComponent = Mat_<float>::zeros(bordedImage.size());
+}
+
+Mat& toComplex(Mat& image) {
+
+  // cria a compoente real em escala logaritmica
+  realComponent = Mat(image);
+  realComponent += Scalar::all(1);
+  cv::log(realComponent, realComponent);
+
+  // limpa o array de matrizes que vao compor a imagem complexa
+  complexComponents.clear();
+
+  // insere as duas componentes no array de matrizes
+  complexComponents.push_back(realComponent);
+
+  complexComponents.push_back(imaginaryComponent);
+
+  // combina o array de matrizes em uma unica componente complexa
+  cv::merge(complexComponents, complexImage);
+
+  return complexImage;
+}
+
+void buildFilter(Mat& filter, int optimalHeight, int optimalWidth) {
+
+  // Cria uma matriz temporária para criar as 
+  // componentes real e imaginaria do filtro ideal
+  Mat_<float> mask = Mat(optimalHeight, optimalWidth, CV_32F);
+
+  float H, W;
+  float gain = (float) K/10;
+  float gammaLow = (float) GAMMA_LOW_SLIDER/10;
+  float gammaHigh = (float) GAMMA_HIGH_SLIDER/10;
+  float radius = (float) RADIUS_SLIDER/10;
+
+  printf("\nGanho(c)/Gama(L)/Gama(H)/Raio: %.3f/ %.3f/ %.3f/ %.3f", gain, gammaLow, gammaHigh, radius);
+
+  for (int h = 0; h < optimalHeight; h++) {
+    for (int w = 0; w < optimalWidth; w++) {
+      H = h - ((float) optimalHeight / 2);
+      W = w - ((float) optimalWidth / 2);
+      mask.at<float>(h,w) = ((gammaHigh - gammaLow) * (1 - exp(-gain * ((H*H)+(W*W))/(radius*radius)))) + gammaLow;
+    }
+  }
+
+  cv::imshow("Filtro homomorfico", mask);
+
+  Mat masks[] = {mask, mask};
+  cv::merge(masks, 2, filter);
+}
+
+Mat& homomorphic(Mat& complexImage, Mat& filter) {
+
+  // Calcula a DFT
+  cv::dft(complexImage, complexImage);
+
+  // realiza a troca de quadrantes
+  swapQuadrants(complexImage);
+
+  // aplica o filtro frequencial
+  cv::mulSpectrums(complexImage, filter, complexImage, 0);
+
+  // troca novamente os quadrantes
+  swapQuadrants(complexImage);
+
+  // calcula a DFT inversa
+  cv::idft(complexImage, complexImage);
+
+  complexComponents.clear();
+
+  cv::split(complexImage, complexComponents);
+
+  cv::normalize(complexComponents[0], complexComponents[0], 0, 1, CV_MINMAX);
+
+  cv::exp(complexComponents[0], complexComponents[0]);
+
+  cv::normalize(complexComponents[0], complexComponents[0], 0, 1, CV_MINMAX);
+
+  return complexComponents[0];
+}
+
+void loadImage(Mat& originalImage, Mat& loadedImage, Mat& filter) {
+
+  cv::imshow("original", originalImage);
+
+  originalWidth = originalImage.cols;
+  originalHeight= originalImage.rows;
+
+  makeBorder(
+    originalImage, 
+    loadedImage, 
+    originalHeight, 
+    originalWidth, 
+    optimalHeight, 
+    optimalWidth);
+
+  buildFilter(
+    filter, 
+    optimalHeight, 
+    optimalWidth);
+
+}
+
+void processSlider(int, void*) {
+  
+  buildFilter(filter, optimalHeight, optimalWidth);
+}
+
+int main(int argc, char** argv) {
+
+  char key = 0;
+  Mat homomorphicImage;
+  Mat inputImage = cv::imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
+
+  loadImage(inputImage, loadedImage, filter);
+
+  do {
+
+    homomorphicImage = homomorphic(toComplex(loadedImage), filter);
+    cv::imshow("Filtragem homomorfica", homomorphicImage);
+
+    sprintf( trackbar, "Gama (H) x %d", MAX_GAMMA_HIGH/10);
+    cv::createTrackbar( trackbar, "Filtragem homomorfica", 
+              &GAMMA_HIGH_SLIDER, 
+              MAX_GAMMA_HIGH, 
+              NULL);
+    
+    sprintf( trackbar, "Gama (L) x %d", MAX_GAMMA_LOW/10);
+    cv::createTrackbar( trackbar, "Filtragem homomorfica", 
+              &GAMMA_LOW_SLIDER, 
+              MAX_GAMMA_LOW, 
+              NULL);
+    
+    sprintf( trackbar, "K x %d", MAX_K/10);
+    cv::createTrackbar( trackbar, "Filtragem homomorfica", 
+              &K, 
+              MAX_K, 
+              NULL);
+
+    sprintf( trackbar, "Raio x %d", MAX_RADIUS/10);
+    cv::createTrackbar( trackbar, "Filtragem homomorfica", 
+              &RADIUS_SLIDER, 
+              MAX_RADIUS, 
+              NULL);
+
+    processSlider(RADIUS_SLIDER,0);
+
+  } while ((char)waitKey(10) != 27);
+
+  // cv::imwrite("homomorfica.jpg", homomorphicImage);
+
+  return 0;
+}
+----
+
+== 9. Detecção de bordas com o algoritmo de Canny
+
+== 10. Canny e a arte com pontilhismo
+
+=== Exercício 10.2 - Filtragem homomófica
+
+O exercício 6.2.a pede para que, utilizando o programa exemplos/filtroespacial.cpp como referência, implemente um programa laplgauss.cpp que deverá acrescentar mais uma funcionalidade ao exemplo fornecido, permitindo que seja calculado o laplaciano do gaussiano das imagens capturadas. Ao fim, comparar o resultado desse filtro com a simples aplicação do filtro laplaciano.
+
+[[app-listing]]
+[source,cpp]
+.cannypoints.cpp
+----
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+#include <fstream>
+#include <iomanip>
+#include <vector>
+#include <algorithm>
+#include <numeric>
+#include <ctime>
+#include <cstdlib>
+
+#include <list>
+#include <random>
+
+#include <ext/numeric>
+#include <ext/algorithm>
+#include <ext/functional>
+
+using namespace std;
+using namespace cv;
+
+int top_slider = 10;
+int top_slider_max = 200;
+
+//STEP define o passo usado para varrer a imagem de referência
+int STEP = 1;
+int STEP_max = 8;
+
+int JITTER = 2;
+int JITTER_max = 15;
+
+int RAIO = 1;
+int RAIO_max = 8;
+
+Mat cannyPoints;
+Mat image, border;
+
+void processCannyParameters(int, void*) {
+
+  int x, y;
+
+  int width  = image.size().width;
+  int height = image.size().height;
+
+  // Determina os contornos usando os algorirmo de Canny
+  Canny(image, border, top_slider, 3*top_slider);
+  
+  imshow("canny", border);
+
+  // Limita o STEP e o JITTER a 1.
+  STEP = (STEP < 1 ? 1 : STEP);
+  JITTER = (JITTER < 1 ? 1 : JITTER);
+
+  // calcula parametros fixos para otimizar a execucao
+  float halfSTEP = (STEP/2);
+  int oneJITTER = (JITTER + 1);
+  int doubleJITTER = (2*JITTER);
+
+  // Inicializa o vetor xrange com um ganho igual 
+  // ... a STEP e um deslocamento STEP/2
+  vector<int> xrange;
+  xrange.resize(height/STEP);
+  for (uint i = 0; i < xrange.size(); i++) {
+    xrange[i] = (i * STEP) + halfSTEP;
+  }
+
+  // Inicializa o vetor xrange com um ganho igual 
+  // ... a STEP e um deslocamento STEP/2
+  vector<int> yrange;
+  yrange.resize(width/STEP);
+  for (uint i = 0; i < yrange.size(); i++) {
+    yrange[i] = (i * STEP) + halfSTEP;
+  }
+
+  cannyPoints = Mat(height, width, CV_8UC3, Scalar(255, 255, 255));
+
+  // randomizacao dos elementos do range em X
+  random_shuffle(xrange.begin(), xrange.end());
+
+
+  for (auto i : xrange) {
+
+    // randomizacao dos elementos do range em Y
+    random_shuffle(yrange.begin(), yrange.end());
+
+    for (auto j : yrange) {
+
+      // Obtem, para cada elemento (i,j) 
+      // ... sorteado, o ponto (x,y) da imagem.
+      x = (i + (rand() % doubleJITTER) - oneJITTER);
+      y = (j + (rand() % doubleJITTER) - oneJITTER); 
+
+      // Desenha um circulo de raio RAIO da mesma cor do ponto (x,y) 
+      // ... da imagem. Observe o 'swap' dos valores BGR para RGB
+      circle( cannyPoints, 
+          cv::Point(y, x), 
+          RAIO, 
+          CV_RGB(
+            // Obtem a cor do ponto (x,y) da imagem.
+            (int)(image.at<Vec3b>(x,y)[2]), 
+            (int)(image.at<Vec3b>(x,y)[1]), 
+            (int)(image.at<Vec3b>(x,y)[0])), 
+          -1, 
+          CV_AA);
+    }
+  }
+
+  // Desenho dos pontos da borda da imagem (OPCIONAL)
+  for (int i = 0; i < height; i+=2 ) {
+
+    for (int j = 0; j < width; j+=2) {
+
+      if (border.at<uchar>(i, j) > 0) {
+
+        circle( cannyPoints, 
+            cv::Point(j,i), 
+            RAIO/2, 
+            CV_RGB(
+              (int)(image.at<Vec3b>(i,j)[2]), 
+              (int)(image.at<Vec3b>(i,j)[1]), 
+              (int)(image.at<Vec3b>(i,j)[0])), 
+            -1, 
+            CV_AA);
+      }
+    }
+  }
+
+  imshow("Canny", cannyPoints);
+}
+
+int main(int argc, char**argv) {
+
+  image = imread(argv[1], CV_LOAD_IMAGE_COLOR);
+
+  namedWindow("Canny", 1);
+
+  cvMoveWindow( "Canny", image.cols, 0 );
+
+
+  createTrackbar("LIMIAR", "Canny", 
+          &top_slider, 
+          top_slider_max, 
+          processCannyParameters);
+
+  createTrackbar("PASSO", "Canny", 
+          &STEP, 
+          STEP_max, 
+          processCannyParameters);
+
+  createTrackbar("JITTER", "Canny", 
+          &JITTER, 
+          JITTER_max, 
+          processCannyParameters);
+
+  createTrackbar("RAIO", "Canny", 
+          &RAIO, 
+          RAIO_max, 
+          processCannyParameters);
+
+
+  processCannyParameters(top_slider, 0 );
+
+  imwrite("canny.jpg", cannyPoints);
+
+  waitKey();
+
+  return 0;
+}
+----
