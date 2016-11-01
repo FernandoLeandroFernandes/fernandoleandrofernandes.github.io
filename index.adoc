@@ -883,15 +883,23 @@ O filtro homomórfico atenua as frequências baixas, caracterísitica da ilumina
 
 A função de transferência do filtro homomórfico é dada pela seguinte expressão:
 
-Fórmula de H(u,v)
+[[img-fnHuv]]
+image::images/fnHuv.png[H(u,v)]
 
-D(u,v) se dá pela seguinte fórmula:
+onde, Gama_H é o limite superior da atenuação do filtro e Gama_L é o limite inferior. D0 é frequência de corte (__cutoff__) do filtro e D(u,v) é dado pela fórmula:
 
-Fórmula de D(u,v)
+[[img-fnDuv]]
+image::images/fnDuv.png[D(u,v)]
 
-GamaH é o limite superior da atenuação do filtro e GamaL é o limite inferior. D0 é o raio do filtro.
+em que P e Q são as dimensões ajustadas (__padded__) da imagem.
 
-Após a aplicação do filtro, calculou-se a Transformada Discreta Inversa de Fourier (Inverse Discrete Fourier Transform - IDFT), normalizou-se os elementos da imagem para valores de 0 a 1. 
+O gráfico da função de transferência do filtro homomórfico se assemelha ao mostrado no gráfico abaixo:
+
+[[img-graphHomomorphic]]
+.Gráfico da função de transferência do filtro homomórfico.
+image::images/graphHomomorphic.png[gráfico filtro homomórfico]
+
+Após a aplicação do filtro, calculou-se a Transformada Discreta Inversa de Fourier (Inverse Discrete Fourier Transform - IDFT), normalizou-se os pontos da imagem para valores de 0 a 1. 
 
 Para retormar a imagem da escala logarítmica calculou-se a exponencial da imagem e, novamente, a normalizou. Os resultados obtidos foram os seguintes:
 
@@ -912,13 +920,13 @@ using namespace std;
 using namespace cv;
 
 // FILTER PARAMETERS
-int K = 5;
-int RADIUS_SLIDER = 80;
-int GAMMA_LOW_SLIDER = 5;
-int GAMMA_HIGH_SLIDER = 20;
+int gainSlider = 5;
+int radiusSlider = 80;
+int gammaLowSlider = 5;
+int gammaHighSlider = 20;
 
 // FILTER LIMITS
-int MAX_K = 1000;
+int MAX_GAIN = 1000;
 int MAX_RADIUS = 1000;
 int MAX_GAMMA_LOW = 1000;
 int MAX_GAMMA_HIGH = 1000;
@@ -1017,10 +1025,10 @@ void buildFilter(Mat& filter, int optimalHeight, int optimalWidth) {
   Mat_<float> mask = Mat(optimalHeight, optimalWidth, CV_32F);
 
   float H, W;
-  float gain = (float) K/10;
-  float gammaLow = (float) GAMMA_LOW_SLIDER/10;
-  float gammaHigh = (float) GAMMA_HIGH_SLIDER/10;
-  float radius = (float) RADIUS_SLIDER/10;
+  float gain = (float) gainSlider/10;
+  float gammaLow = (float) gammaLowSlider/10;
+  float gammaHigh = (float) gammaHighSlider/10;
+  float radius = (float) radiusSlider/10;
 
   printf("\nGanho(c)/Gama(L)/Gama(H)/Raio: %.3f/ %.3f/ %.3f/ %.3f", gain, gammaLow, gammaHigh, radius);
 
@@ -1049,20 +1057,24 @@ Mat& homomorphic(Mat& complexImage, Mat& filter) {
   // aplica o filtro frequencial
   cv::mulSpectrums(complexImage, filter, complexImage, 0);
 
-  // troca novamente os quadrantes
+  // permuta os quadrantes
   swapQuadrants(complexImage);
 
-  // calcula a DFT inversa
+  // calcula a TRANSFORMADA INVERSA DE FOURIER
   cv::idft(complexImage, complexImage);
 
   complexComponents.clear();
 
+  // separa os componentes da imagem complexa
   cv::split(complexImage, complexComponents);
 
+  // normaliza os valores dos pixels entre 0 e 1
   cv::normalize(complexComponents[0], complexComponents[0], 0, 1, CV_MINMAX);
 
+  // aplica o exponencial ao componente real da imagem
   cv::exp(complexComponents[0], complexComponents[0]);
 
+  // normaliza novamente os valores dos pixels entre 0 e 1
   cv::normalize(complexComponents[0], complexComponents[0], 0, 1, CV_MINMAX);
 
   return complexComponents[0];
@@ -1087,7 +1099,6 @@ void loadImage(Mat& originalImage, Mat& loadedImage, Mat& filter) {
     filter, 
     optimalHeight, 
     optimalWidth);
-
 }
 
 void processSlider(int, void*) {
@@ -1110,29 +1121,29 @@ int main(int argc, char** argv) {
 
     sprintf( trackbar, "Gama (H) x %d", MAX_GAMMA_HIGH/10);
     cv::createTrackbar( trackbar, "Filtragem homomorfica", 
-              &GAMMA_HIGH_SLIDER, 
+              &gammaHighSlider, 
               MAX_GAMMA_HIGH, 
               NULL);
     
     sprintf( trackbar, "Gama (L) x %d", MAX_GAMMA_LOW/10);
     cv::createTrackbar( trackbar, "Filtragem homomorfica", 
-              &GAMMA_LOW_SLIDER, 
+              &gammaLowSlider, 
               MAX_GAMMA_LOW, 
               NULL);
     
-    sprintf( trackbar, "K x %d", MAX_K/10);
+    sprintf( trackbar, "K x %d", MAX_GAIN/10);
     cv::createTrackbar( trackbar, "Filtragem homomorfica", 
-              &K, 
-              MAX_K, 
+              &gainSlider, 
+              MAX_GAIN, 
               NULL);
 
     sprintf( trackbar, "Raio x %d", MAX_RADIUS/10);
     cv::createTrackbar( trackbar, "Filtragem homomorfica", 
-              &RADIUS_SLIDER, 
+              &radiusSlider, 
               MAX_RADIUS, 
               NULL);
 
-    processSlider(RADIUS_SLIDER,0);
+    processSlider(radiusSlider,0);
 
   } while ((char)waitKey(10) != 27);
 
@@ -1150,14 +1161,16 @@ image::images/tunnel-480.png[Imagem original]
 .Imagem obtida após a filtragem homomórfica.
 image::images/tunel-homomorphic.png[Imagem filtrada]
 
-Para a imagem acima, foram utilizados os seguintes parâmetros: Ganho(c): 0.5, Gama-low (Gl): 0.5, Gama-high(Gh): 0.8, Raio: 8.
+É possível ajustar 4 parâmetros do filtro para adequar às necessidades de correção da imagem tratada, são eles o c (ganho), o gama low (gL), gama high (gH) e o raio ou frequência de corte do filtro (D0), em inglês __cutoff__.
+
+Para a imagem acima, foram utilizados os seguintes parâmetros: Ganho(c): 0.5, Gama-low (gL): 0.5, Gama-high(gH): 0.8, Raio (D0): 8.
 O resultado obtido atende ao esperado, corrigindo a iluminação deficiente da imagem original.
 
 == 10. Canny e a arte com pontilhismo
 
-=== Exercício 10.2 - Filtragem homomófica
+=== Exercício 10 - Filtragem homomófica
 
-O exercício 10 pede para que, utilizando programas de exemplo (canny.cpp e pontilhismo.cpp) como referência, se implementasse um programa cannypoints.cpp que simule a técnica de pintura artística conhecida como pontilhismo que as imagens são compostas com pontos utilizando as bordas produzidas pelo algoritmo de Canny para melhorar a qualidade da imagem pontilhista gerada. Ao fim, descrever detalhes do procedimento usado para criar sua técnica pontilhista.
+O exercício 10 pede para que, utilizando programas de exemplo (''canny.cpp'' e ''pontilhismo.cpp'') como referência, fosse implementado o programa ''cannypoints.cpp'' que simule a técnica de pintura artística conhecida como pontilhismo que as imagens são compostas com pontos utilizando as bordas produzidas pelo algoritmo de Canny para melhorar a qualidade da imagem pontilhista gerada. Ao fim, descrever detalhes do procedimento usado para criar sua técnica pontilhista.
 
 A implementação desenvolvida para a resolução do problema proposto foi o seguinte:
 
@@ -1270,8 +1283,8 @@ void processCannyParameters(int, void*) {
     }
   }
 
-  // Desenho dos pontos da borda da imagem para melhoria 
-  // ... das características da imagem pontilhizada gerada
+  // Desenho dos pontos da borda da imagem para 
+  // ... realce das bordas da imagem pontilhista gerada
   for (int i = 0; i < height; i+=2 ) {
 
     for (int j = 0; j < width; j+=2) {
@@ -1327,15 +1340,15 @@ int main(int argc, char**argv) {
 
   imwrite("canny.jpg", cannyPoints);
 
-   do {} while ((char)waitKey(10) != 27);
+  do {} while ((char)waitKey(10) != 27);
 
   return 0;
 }
 ----
 
-Observou-se que círculos com raio muito grande geravam um excesso artificial na marcação dos contornos da imagem. Assim, optou-se por reduzir o raio dos círculos pela metade assim como a frequência dos pontos desenhados, também pela metada.
+Abaixo temos as imagens original e processada, resultado do processamento com a técnica pontilhista desenvolvida.
 
-Abaixo temos as imagens original e equalizada, resultado do processamento com a técnica pontilhista desenvolvida.
+TIP: Foram usados os seguintes parâmetros no processamento das imagens: Limiar=8, Passo=1, Jitter=2, Raio=2.
 
 [[image-tunnel]]
 .Imagem original de um túnel usada na técnica de pontilhismo antes do processamento.
@@ -1355,4 +1368,4 @@ image::images/NYC.jpg[Imagem original]
 .Imagem da cidade de Nova York obtida da técnica de pontilhismo.
 image::images/NYC-points.jpg[Imagem pontilhizada]
 
-
+Observou-se que 'pontos' gerados com círculos de raio muito grande geravam uma marcação artificial dos contornos da imagem. Assim, optou-se por reduzir o raio dos círculos pela metade assim como a frequência dos pontos desenhados, também pela metade.

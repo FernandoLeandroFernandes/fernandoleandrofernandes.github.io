@@ -534,7 +534,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_10_canny_e_a_arte_com_pontilhismo">10. Canny e a arte com pontilhismo</a>
 <ul class="sectlevel2">
-<li><a href="#_exercício_10_2_filtragem_homomófica">Exercício 10.2 - Filtragem homomófica</a></li>
+<li><a href="#_exercício_10_filtragem_homomófica">Exercício 10 - Filtragem homomófica</a></li>
 </ul>
 </li>
 </ul>
@@ -1544,20 +1544,33 @@ Optou-se pela ferramenta CMake para a compilação dos códigos.
 <div class="paragraph">
 <p>A função de transferência do filtro homomórfico é dada pela seguinte expressão:</p>
 </div>
-<div class="paragraph">
-<p>Fórmula de H(u,v)</p>
+<div id="img-fnHuv" class="imageblock">
+<div class="content">
+<img src="images/fnHuv.png" alt="H(u" width="v)">
+</div>
 </div>
 <div class="paragraph">
-<p>D(u,v) se dá pela seguinte fórmula:</p>
+<p>onde, Gama_H é o limite superior da atenuação do filtro e Gama_L é o limite inferior. D0 é frequência de corte (<em>cutoff</em>) do filtro e D(u,v) é dado pela fórmula:</p>
+</div>
+<div id="img-fnDuv" class="imageblock">
+<div class="content">
+<img src="images/fnDuv.png" alt="D(u" width="v)">
+</div>
 </div>
 <div class="paragraph">
-<p>Fórmula de D(u,v)</p>
+<p>em que P e Q são as dimensões ajustadas (<em>padded</em>) da imagem.</p>
 </div>
 <div class="paragraph">
-<p>GamaH é o limite superior da atenuação do filtro e GamaL é o limite inferior. D0 é o raio do filtro.</p>
+<p>O gráfico da função de transferência do filtro homomórfico se assemelha ao mostrado no gráfico abaixo:</p>
+</div>
+<div id="img-graphHomomorphic" class="imageblock">
+<div class="content">
+<img src="images/graphHomomorphic.png" alt="gráfico filtro homomórfico">
+</div>
+<div class="title">Figure 17. Gráfico da função de transferência do filtro homomórfico.</div>
 </div>
 <div class="paragraph">
-<p>Após a aplicação do filtro, calculou-se a Transformada Discreta Inversa de Fourier (Inverse Discrete Fourier Transform - IDFT), normalizou-se os elementos da imagem para valores de 0 a 1.</p>
+<p>Após a aplicação do filtro, calculou-se a Transformada Discreta Inversa de Fourier (Inverse Discrete Fourier Transform - IDFT), normalizou-se os pontos da imagem para valores de 0 a 1.</p>
 </div>
 <div class="paragraph">
 <p>Para retormar a imagem da escala logarítmica calculou-se a exponencial da imagem e, novamente, a normalizou. Os resultados obtidos foram os seguintes:</p>
@@ -1577,13 +1590,13 @@ Optou-se pela ferramenta CMake para a compilação dos códigos.
 <span class="tok-k">using</span> <span class="tok-k">namespace</span> <span class="tok-n">cv</span><span class="tok-p">;</span>
 
 <span class="tok-c1">// FILTER PARAMETERS</span>
-<span class="tok-kt">int</span> <span class="tok-n">K</span> <span class="tok-o">=</span> <span class="tok-mi">5</span><span class="tok-p">;</span>
-<span class="tok-kt">int</span> <span class="tok-n">RADIUS_SLIDER</span> <span class="tok-o">=</span> <span class="tok-mi">80</span><span class="tok-p">;</span>
-<span class="tok-kt">int</span> <span class="tok-n">GAMMA_LOW_SLIDER</span> <span class="tok-o">=</span> <span class="tok-mi">5</span><span class="tok-p">;</span>
-<span class="tok-kt">int</span> <span class="tok-n">GAMMA_HIGH_SLIDER</span> <span class="tok-o">=</span> <span class="tok-mi">20</span><span class="tok-p">;</span>
+<span class="tok-kt">int</span> <span class="tok-n">gainSlider</span> <span class="tok-o">=</span> <span class="tok-mi">5</span><span class="tok-p">;</span>
+<span class="tok-kt">int</span> <span class="tok-n">radiusSlider</span> <span class="tok-o">=</span> <span class="tok-mi">80</span><span class="tok-p">;</span>
+<span class="tok-kt">int</span> <span class="tok-n">gammaLowSlider</span> <span class="tok-o">=</span> <span class="tok-mi">5</span><span class="tok-p">;</span>
+<span class="tok-kt">int</span> <span class="tok-n">gammaHighSlider</span> <span class="tok-o">=</span> <span class="tok-mi">20</span><span class="tok-p">;</span>
 
 <span class="tok-c1">// FILTER LIMITS</span>
-<span class="tok-kt">int</span> <span class="tok-n">MAX_K</span> <span class="tok-o">=</span> <span class="tok-mi">1000</span><span class="tok-p">;</span>
+<span class="tok-kt">int</span> <span class="tok-n">MAX_GAIN</span> <span class="tok-o">=</span> <span class="tok-mi">1000</span><span class="tok-p">;</span>
 <span class="tok-kt">int</span> <span class="tok-n">MAX_RADIUS</span> <span class="tok-o">=</span> <span class="tok-mi">1000</span><span class="tok-p">;</span>
 <span class="tok-kt">int</span> <span class="tok-n">MAX_GAMMA_LOW</span> <span class="tok-o">=</span> <span class="tok-mi">1000</span><span class="tok-p">;</span>
 <span class="tok-kt">int</span> <span class="tok-n">MAX_GAMMA_HIGH</span> <span class="tok-o">=</span> <span class="tok-mi">1000</span><span class="tok-p">;</span>
@@ -1682,10 +1695,10 @@ Optou-se pela ferramenta CMake para a compilação dos códigos.
   <span class="tok-n">Mat_</span><span class="tok-o">&lt;</span><span class="tok-kt">float</span><span class="tok-o">&gt;</span> <span class="tok-n">mask</span> <span class="tok-o">=</span> <span class="tok-n">Mat</span><span class="tok-p">(</span><span class="tok-n">optimalHeight</span><span class="tok-p">,</span> <span class="tok-n">optimalWidth</span><span class="tok-p">,</span> <span class="tok-n">CV_32F</span><span class="tok-p">);</span>
 
   <span class="tok-kt">float</span> <span class="tok-n">H</span><span class="tok-p">,</span> <span class="tok-n">W</span><span class="tok-p">;</span>
-  <span class="tok-kt">float</span> <span class="tok-n">gain</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-kt">float</span><span class="tok-p">)</span> <span class="tok-n">K</span><span class="tok-o">/</span><span class="tok-mi">10</span><span class="tok-p">;</span>
-  <span class="tok-kt">float</span> <span class="tok-n">gammaLow</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-kt">float</span><span class="tok-p">)</span> <span class="tok-n">GAMMA_LOW_SLIDER</span><span class="tok-o">/</span><span class="tok-mi">10</span><span class="tok-p">;</span>
-  <span class="tok-kt">float</span> <span class="tok-n">gammaHigh</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-kt">float</span><span class="tok-p">)</span> <span class="tok-n">GAMMA_HIGH_SLIDER</span><span class="tok-o">/</span><span class="tok-mi">10</span><span class="tok-p">;</span>
-  <span class="tok-kt">float</span> <span class="tok-n">radius</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-kt">float</span><span class="tok-p">)</span> <span class="tok-n">RADIUS_SLIDER</span><span class="tok-o">/</span><span class="tok-mi">10</span><span class="tok-p">;</span>
+  <span class="tok-kt">float</span> <span class="tok-n">gain</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-kt">float</span><span class="tok-p">)</span> <span class="tok-n">gainSlider</span><span class="tok-o">/</span><span class="tok-mi">10</span><span class="tok-p">;</span>
+  <span class="tok-kt">float</span> <span class="tok-n">gammaLow</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-kt">float</span><span class="tok-p">)</span> <span class="tok-n">gammaLowSlider</span><span class="tok-o">/</span><span class="tok-mi">10</span><span class="tok-p">;</span>
+  <span class="tok-kt">float</span> <span class="tok-n">gammaHigh</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-kt">float</span><span class="tok-p">)</span> <span class="tok-n">gammaHighSlider</span><span class="tok-o">/</span><span class="tok-mi">10</span><span class="tok-p">;</span>
+  <span class="tok-kt">float</span> <span class="tok-n">radius</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-kt">float</span><span class="tok-p">)</span> <span class="tok-n">radiusSlider</span><span class="tok-o">/</span><span class="tok-mi">10</span><span class="tok-p">;</span>
 
   <span class="tok-n">printf</span><span class="tok-p">(</span><span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">Ganho(c)/Gama(L)/Gama(H)/Raio: %.3f/ %.3f/ %.3f/ %.3f&quot;</span><span class="tok-p">,</span> <span class="tok-n">gain</span><span class="tok-p">,</span> <span class="tok-n">gammaLow</span><span class="tok-p">,</span> <span class="tok-n">gammaHigh</span><span class="tok-p">,</span> <span class="tok-n">radius</span><span class="tok-p">);</span>
 
@@ -1714,20 +1727,24 @@ Optou-se pela ferramenta CMake para a compilação dos códigos.
   <span class="tok-c1">// aplica o filtro frequencial</span>
   <span class="tok-n">cv</span><span class="tok-o">::</span><span class="tok-n">mulSpectrums</span><span class="tok-p">(</span><span class="tok-n">complexImage</span><span class="tok-p">,</span> <span class="tok-n">filter</span><span class="tok-p">,</span> <span class="tok-n">complexImage</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>
 
-  <span class="tok-c1">// troca novamente os quadrantes</span>
+  <span class="tok-c1">// permuta os quadrantes</span>
   <span class="tok-n">swapQuadrants</span><span class="tok-p">(</span><span class="tok-n">complexImage</span><span class="tok-p">);</span>
 
-  <span class="tok-c1">// calcula a DFT inversa</span>
+  <span class="tok-c1">// calcula a TRANSFORMADA INVERSA DE FOURIER</span>
   <span class="tok-n">cv</span><span class="tok-o">::</span><span class="tok-n">idft</span><span class="tok-p">(</span><span class="tok-n">complexImage</span><span class="tok-p">,</span> <span class="tok-n">complexImage</span><span class="tok-p">);</span>
 
   <span class="tok-n">complexComponents</span><span class="tok-p">.</span><span class="tok-n">clear</span><span class="tok-p">();</span>
 
+  <span class="tok-c1">// separa os componentes da imagem complexa</span>
   <span class="tok-n">cv</span><span class="tok-o">::</span><span class="tok-n">split</span><span class="tok-p">(</span><span class="tok-n">complexImage</span><span class="tok-p">,</span> <span class="tok-n">complexComponents</span><span class="tok-p">);</span>
 
+  <span class="tok-c1">// normaliza os valores dos pixels entre 0 e 1</span>
   <span class="tok-n">cv</span><span class="tok-o">::</span><span class="tok-n">normalize</span><span class="tok-p">(</span><span class="tok-n">complexComponents</span><span class="tok-p">[</span><span class="tok-mi">0</span><span class="tok-p">],</span> <span class="tok-n">complexComponents</span><span class="tok-p">[</span><span class="tok-mi">0</span><span class="tok-p">],</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-n">CV_MINMAX</span><span class="tok-p">);</span>
 
+  <span class="tok-c1">// aplica o exponencial ao componente real da imagem</span>
   <span class="tok-n">cv</span><span class="tok-o">::</span><span class="tok-n">exp</span><span class="tok-p">(</span><span class="tok-n">complexComponents</span><span class="tok-p">[</span><span class="tok-mi">0</span><span class="tok-p">],</span> <span class="tok-n">complexComponents</span><span class="tok-p">[</span><span class="tok-mi">0</span><span class="tok-p">]);</span>
 
+  <span class="tok-c1">// normaliza novamente os valores dos pixels entre 0 e 1</span>
   <span class="tok-n">cv</span><span class="tok-o">::</span><span class="tok-n">normalize</span><span class="tok-p">(</span><span class="tok-n">complexComponents</span><span class="tok-p">[</span><span class="tok-mi">0</span><span class="tok-p">],</span> <span class="tok-n">complexComponents</span><span class="tok-p">[</span><span class="tok-mi">0</span><span class="tok-p">],</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-n">CV_MINMAX</span><span class="tok-p">);</span>
 
   <span class="tok-k">return</span> <span class="tok-n">complexComponents</span><span class="tok-p">[</span><span class="tok-mi">0</span><span class="tok-p">];</span>
@@ -1752,7 +1769,6 @@ Optou-se pela ferramenta CMake para a compilação dos códigos.
     <span class="tok-n">filter</span><span class="tok-p">,</span>
     <span class="tok-n">optimalHeight</span><span class="tok-p">,</span>
     <span class="tok-n">optimalWidth</span><span class="tok-p">);</span>
-
 <span class="tok-p">}</span>
 
 <span class="tok-kt">void</span> <span class="tok-n">processSlider</span><span class="tok-p">(</span><span class="tok-kt">int</span><span class="tok-p">,</span> <span class="tok-kt">void</span><span class="tok-o">*</span><span class="tok-p">)</span> <span class="tok-p">{</span>
@@ -1775,29 +1791,29 @@ Optou-se pela ferramenta CMake para a compilação dos códigos.
 
     <span class="tok-n">sprintf</span><span class="tok-p">(</span> <span class="tok-n">trackbar</span><span class="tok-p">,</span> <span class="tok-s">&quot;Gama (H) x %d&quot;</span><span class="tok-p">,</span> <span class="tok-n">MAX_GAMMA_HIGH</span><span class="tok-o">/</span><span class="tok-mi">10</span><span class="tok-p">);</span>
     <span class="tok-n">cv</span><span class="tok-o">::</span><span class="tok-n">createTrackbar</span><span class="tok-p">(</span> <span class="tok-n">trackbar</span><span class="tok-p">,</span> <span class="tok-s">&quot;Filtragem homomorfica&quot;</span><span class="tok-p">,</span>
-              <span class="tok-o">&amp;</span><span class="tok-n">GAMMA_HIGH_SLIDER</span><span class="tok-p">,</span>
+              <span class="tok-o">&amp;</span><span class="tok-n">gammaHighSlider</span><span class="tok-p">,</span>
               <span class="tok-n">MAX_GAMMA_HIGH</span><span class="tok-p">,</span>
               <span class="tok-nb">NULL</span><span class="tok-p">);</span>
 
     <span class="tok-n">sprintf</span><span class="tok-p">(</span> <span class="tok-n">trackbar</span><span class="tok-p">,</span> <span class="tok-s">&quot;Gama (L) x %d&quot;</span><span class="tok-p">,</span> <span class="tok-n">MAX_GAMMA_LOW</span><span class="tok-o">/</span><span class="tok-mi">10</span><span class="tok-p">);</span>
     <span class="tok-n">cv</span><span class="tok-o">::</span><span class="tok-n">createTrackbar</span><span class="tok-p">(</span> <span class="tok-n">trackbar</span><span class="tok-p">,</span> <span class="tok-s">&quot;Filtragem homomorfica&quot;</span><span class="tok-p">,</span>
-              <span class="tok-o">&amp;</span><span class="tok-n">GAMMA_LOW_SLIDER</span><span class="tok-p">,</span>
+              <span class="tok-o">&amp;</span><span class="tok-n">gammaLowSlider</span><span class="tok-p">,</span>
               <span class="tok-n">MAX_GAMMA_LOW</span><span class="tok-p">,</span>
               <span class="tok-nb">NULL</span><span class="tok-p">);</span>
 
-    <span class="tok-n">sprintf</span><span class="tok-p">(</span> <span class="tok-n">trackbar</span><span class="tok-p">,</span> <span class="tok-s">&quot;K x %d&quot;</span><span class="tok-p">,</span> <span class="tok-n">MAX_K</span><span class="tok-o">/</span><span class="tok-mi">10</span><span class="tok-p">);</span>
+    <span class="tok-n">sprintf</span><span class="tok-p">(</span> <span class="tok-n">trackbar</span><span class="tok-p">,</span> <span class="tok-s">&quot;K x %d&quot;</span><span class="tok-p">,</span> <span class="tok-n">MAX_GAIN</span><span class="tok-o">/</span><span class="tok-mi">10</span><span class="tok-p">);</span>
     <span class="tok-n">cv</span><span class="tok-o">::</span><span class="tok-n">createTrackbar</span><span class="tok-p">(</span> <span class="tok-n">trackbar</span><span class="tok-p">,</span> <span class="tok-s">&quot;Filtragem homomorfica&quot;</span><span class="tok-p">,</span>
-              <span class="tok-o">&amp;</span><span class="tok-n">K</span><span class="tok-p">,</span>
-              <span class="tok-n">MAX_K</span><span class="tok-p">,</span>
+              <span class="tok-o">&amp;</span><span class="tok-n">gainSlider</span><span class="tok-p">,</span>
+              <span class="tok-n">MAX_GAIN</span><span class="tok-p">,</span>
               <span class="tok-nb">NULL</span><span class="tok-p">);</span>
 
     <span class="tok-n">sprintf</span><span class="tok-p">(</span> <span class="tok-n">trackbar</span><span class="tok-p">,</span> <span class="tok-s">&quot;Raio x %d&quot;</span><span class="tok-p">,</span> <span class="tok-n">MAX_RADIUS</span><span class="tok-o">/</span><span class="tok-mi">10</span><span class="tok-p">);</span>
     <span class="tok-n">cv</span><span class="tok-o">::</span><span class="tok-n">createTrackbar</span><span class="tok-p">(</span> <span class="tok-n">trackbar</span><span class="tok-p">,</span> <span class="tok-s">&quot;Filtragem homomorfica&quot;</span><span class="tok-p">,</span>
-              <span class="tok-o">&amp;</span><span class="tok-n">RADIUS_SLIDER</span><span class="tok-p">,</span>
+              <span class="tok-o">&amp;</span><span class="tok-n">radiusSlider</span><span class="tok-p">,</span>
               <span class="tok-n">MAX_RADIUS</span><span class="tok-p">,</span>
               <span class="tok-nb">NULL</span><span class="tok-p">);</span>
 
-    <span class="tok-n">processSlider</span><span class="tok-p">(</span><span class="tok-n">RADIUS_SLIDER</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">);</span>
+    <span class="tok-n">processSlider</span><span class="tok-p">(</span><span class="tok-n">radiusSlider</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">);</span>
 
   <span class="tok-p">}</span> <span class="tok-k">while</span> <span class="tok-p">((</span><span class="tok-kt">char</span><span class="tok-p">)</span><span class="tok-n">waitKey</span><span class="tok-p">(</span><span class="tok-mi">10</span><span class="tok-p">)</span> <span class="tok-o">!=</span> <span class="tok-mi">27</span><span class="tok-p">);</span>
 
@@ -1811,16 +1827,19 @@ Optou-se pela ferramenta CMake para a compilação dos códigos.
 <div class="content">
 <img src="images/tunnel-480.png" alt="Imagem original">
 </div>
-<div class="title">Figure 17. Imagem original usada na filtragem homomórfica.</div>
+<div class="title">Figure 18. Imagem original usada na filtragem homomórfica.</div>
 </div>
 <div id="image-NYC-points" class="imageblock">
 <div class="content">
 <img src="images/tunel-homomorphic.png" alt="Imagem filtrada">
 </div>
-<div class="title">Figure 18. Imagem obtida após a filtragem homomórfica.</div>
+<div class="title">Figure 19. Imagem obtida após a filtragem homomórfica.</div>
 </div>
 <div class="paragraph">
-<p>Para a imagem acima foram utilizados os seguintes parâmetros: Ganho(c): 0.5, Gama-low (Gl): 0.5, Gama-high(Gh): 0.8, Raio: 8.
+<p>É possível ajustar 4 parâmetros do filtro para adequar às necessidades de correção da imagem tratada, são eles o c (ganho), o gama low (gL), gama high (gH) e o raio ou frequência de corte do filtro (D0), em inglês <em>cutoff</em>.</p>
+</div>
+<div class="paragraph">
+<p>Para a imagem acima, foram utilizados os seguintes parâmetros: Ganho(c): 0.5, Gama-low (gL): 0.5, Gama-high(gH): 0.8, Raio (D0): 8.
 O resultado obtido atende ao esperado, corrigindo a iluminação deficiente da imagem original.</p>
 </div>
 </div>
@@ -1830,9 +1849,9 @@ O resultado obtido atende ao esperado, corrigindo a iluminação deficiente da i
 <h2 id="_10_canny_e_a_arte_com_pontilhismo">10. Canny e a arte com pontilhismo</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_exercício_10_2_filtragem_homomófica">Exercício 10.2 - Filtragem homomófica</h3>
+<h3 id="_exercício_10_filtragem_homomófica">Exercício 10 - Filtragem homomófica</h3>
 <div class="paragraph">
-<p>O exercício 10 pede para que, utilizando programas de exemplo (canny.cpp e pontilhismo.cpp) como referência, se implementasse um programa cannypoints.cpp que simule a técnica de pintura artística conhecida como pontilhismo que as imagens são compostas com pontos utilizando as bordas produzidas pelo algoritmo de Canny para melhorar a qualidade da imagem pontilhista gerada. Ao fim, descrever detalhes do procedimento usado para criar sua técnica pontilhista.</p>
+<p>O exercício 10 pede para que, utilizando programas de exemplo (''canny.cpp'' e ''pontilhismo.cpp'') como referência, fosse implementado o programa ''cannypoints.cpp'' que simule a técnica de pintura artística conhecida como pontilhismo que as imagens são compostas com pontos utilizando as bordas produzidas pelo algoritmo de Canny para melhorar a qualidade da imagem pontilhista gerada. Ao fim, descrever detalhes do procedimento usado para criar sua técnica pontilhista.</p>
 </div>
 <div class="paragraph">
 <p>A implementação desenvolvida para a resolução do problema proposto foi o seguinte:</p>
@@ -1945,8 +1964,8 @@ O resultado obtido atende ao esperado, corrigindo a iluminação deficiente da i
     <span class="tok-p">}</span>
   <span class="tok-p">}</span>
 
-  <span class="tok-c1">// Desenho dos pontos da borda da imagem para melhoria</span>
-  <span class="tok-c1">// ... das características da imagem pontilhizada gerada</span>
+  <span class="tok-c1">// Desenho dos pontos da borda da imagem para</span>
+  <span class="tok-c1">// ... realce das bordas da imagem pontilhista gerada</span>
   <span class="tok-k">for</span> <span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">i</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span> <span class="tok-n">i</span> <span class="tok-o">&lt;</span> <span class="tok-n">height</span><span class="tok-p">;</span> <span class="tok-n">i</span><span class="tok-o">+=</span><span class="tok-mi">2</span> <span class="tok-p">)</span> <span class="tok-p">{</span>
 
     <span class="tok-k">for</span> <span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">j</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span> <span class="tok-n">j</span> <span class="tok-o">&lt;</span> <span class="tok-n">width</span><span class="tok-p">;</span> <span class="tok-n">j</span><span class="tok-o">+=</span><span class="tok-mi">2</span><span class="tok-p">)</span> <span class="tok-p">{</span>
@@ -2002,29 +2021,38 @@ O resultado obtido atende ao esperado, corrigindo a iluminação deficiente da i
 
   <span class="tok-n">imwrite</span><span class="tok-p">(</span><span class="tok-s">&quot;canny.jpg&quot;</span><span class="tok-p">,</span> <span class="tok-n">cannyPoints</span><span class="tok-p">);</span>
 
-   <span class="tok-k">do</span> <span class="tok-p">{}</span> <span class="tok-k">while</span> <span class="tok-p">((</span><span class="tok-kt">char</span><span class="tok-p">)</span><span class="tok-n">waitKey</span><span class="tok-p">(</span><span class="tok-mi">10</span><span class="tok-p">)</span> <span class="tok-o">!=</span> <span class="tok-mi">27</span><span class="tok-p">);</span>
+  <span class="tok-k">do</span> <span class="tok-p">{}</span> <span class="tok-k">while</span> <span class="tok-p">((</span><span class="tok-kt">char</span><span class="tok-p">)</span><span class="tok-n">waitKey</span><span class="tok-p">(</span><span class="tok-mi">10</span><span class="tok-p">)</span> <span class="tok-o">!=</span> <span class="tok-mi">27</span><span class="tok-p">);</span>
 
   <span class="tok-k">return</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Observou-se que círculos com raio muito grande geravam um excesso artificial na marcação dos contornos da imagem. Assim, optou-se por reduzir o raio dos círculos pela metade assim como a frequência dos pontos desenhados, também pela metada.</p>
+<p>Abaixo temos as imagens original e processada, resultado do processamento com a técnica pontilhista desenvolvida.</p>
 </div>
-<div class="paragraph">
-<p>Abaixo temos as imagens original e equalizada, resultado do processamento com a técnica pontilhista desenvolvida.</p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+Foram usados os seguintes parâmetros no processamento das imagens: Limiar=8, Passo=1, Jitter=2, Raio=2.
+</td>
+</tr>
+</table>
 </div>
 <div id="image-tunnel" class="imageblock">
 <div class="content">
 <img src="images/tunnel-480.png" alt="Imagem original">
 </div>
-<div class="title">Figure 19. Imagem original de um túnel usada na técnica de pontilhismo antes do processamento.</div>
+<div class="title">Figure 20. Imagem original de um túnel usada na técnica de pontilhismo antes do processamento.</div>
 </div>
 <div id="image-tunnel-points" class="imageblock">
 <div class="content">
 <img src="images/tunnel-points.png" alt="Imagem pontilhizada">
 </div>
-<div class="title">Figure 20. Imagem do túnel obtida da técnica de pontilhismo.</div>
+<div class="title">Figure 21. Imagem do túnel obtida da técnica de pontilhismo.</div>
 </div>
 <div class="paragraph">
 <p>Ressaltamos a característica de semelhança com uma pintura aplicando a técnica simulada sem, entretanto sobrecarregar com pontilhado as bordas da imagem e mantendo a similaridade desejada.</p>
@@ -2033,13 +2061,16 @@ O resultado obtido atende ao esperado, corrigindo a iluminação deficiente da i
 <div class="content">
 <img src="images/NYC.jpg" alt="Imagem original">
 </div>
-<div class="title">Figure 21. Imagem original da cidade de Nova York usada na técnica de pontilhismo antes do processamento.</div>
+<div class="title">Figure 22. Imagem original da cidade de Nova York usada na técnica de pontilhismo antes do processamento.</div>
 </div>
 <div id="image-NYC-points" class="imageblock">
 <div class="content">
 <img src="images/NYC-points.jpg" alt="Imagem pontilhizada">
 </div>
-<div class="title">Figure 22. Imagem da cidade de Nova York obtida da técnica de pontilhismo.</div>
+<div class="title">Figure 23. Imagem da cidade de Nova York obtida da técnica de pontilhismo.</div>
+</div>
+<div class="paragraph">
+<p>Observou-se que 'pontos' gerados com círculos de raio muito grande geravam uma marcação artificial dos contornos da imagem. Assim, optou-se por reduzir o raio dos círculos pela metade assim como a frequência dos pontos desenhados, também pela metade.</p>
 </div>
 </div>
 </div>
@@ -2047,7 +2078,7 @@ O resultado obtido atende ao esperado, corrigindo a iluminação deficiente da i
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-10-31 13:03:05 BRT
+Last updated 2016-11-01 13:39:20 BRT
 </div>
 </div>
 </body>
