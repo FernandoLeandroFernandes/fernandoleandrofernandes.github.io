@@ -1358,7 +1358,7 @@ image::images/tunnel-480.png[Imagem original]
 .Imagem do túnel obtida da técnica de pontilhismo.
 image::images/tunnel-points.png[Imagem pontilhizada]
 
-Ressaltamos a característica de semelhança com uma pintura aplicando a técnica simulada sem, entretanto sobrecarregar com pontilhado as bordas da imagem e mantendo a similaridade desejada.
+Observou-se que 'pontos' gerados com círculos de raio muito grande geravam uma marcação artificial dos contornos da imagem. Assim, optou-se por reduzir o raio dos círculos pela metade assim como a frequência dos pontos desenhados, também pela metade.
 
 [[image-NYC]]
 .Imagem original da cidade de Nova York usada na técnica de pontilhismo antes do processamento.
@@ -1368,4 +1368,4 @@ image::images/NYC.jpg[Imagem original]
 .Imagem da cidade de Nova York obtida da técnica de pontilhismo.
 image::images/NYC-points.jpg[Imagem pontilhizada]
 
-Observou-se que 'pontos' gerados com círculos de raio muito grande geravam uma marcação artificial dos contornos da imagem. Assim, optou-se por reduzir o raio dos círculos pela metade assim como a frequência dos pontos desenhados, também pela metade.
+Ressaltamos a característica de semelhança com uma pintura aplicando a técnica simulada sem, entretanto sobrecarregar com pontilhado as bordas da imagem e mantendo a similaridade desejada. 
