@@ -1,4 +1,4 @@
-# Carte Noire
+# Another GitHub profile
 
 A simple Jekyll theme for blogging. Not named after the coffee.
 
@@ -20,19 +20,15 @@ A simple Jekyll theme for blogging. Not named after the coffee.
 ![Menu](http://i.imgur.com/SClrNSH.png)
 
 ## Contact
-If you wish to contact me regarding this theme please raise an issue on GitHub,
-tweet me [@_jacobtomlinson](http://www.twitter.com/_jacobtomlinson) or email me
-[jacob@jacobtomlinson.co.uk](mailto:jacob@jacobtomlinson.co.uk).
-
-## Contribution
-Pull requests are very welcome.
+If you wish to contact me regarding this page please raise an issue on GitHub,
+or email me [gospark@gospark.org](mailto:gospark@gospark.org).
 
 ## Theme
-This jekyll theme has been created from scratch. Ideas and inspiration are taken
-from other places but the code is my own.
+This page was developed using as base the jekyll Carte-Noire theme. Ideas and 
+inspiration are taken from other places but the content is my own.
 
 ## Tools and Libraries
-The following tools and libraries are used in this theme
+The following tools and libraries are used in this project
 
 ### JavaScript
  * [jQuery](http://jquery.com/)

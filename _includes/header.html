@@ -1,14 +1,23 @@
 <nav id="my-menu">
-  <div>
-    <p>{{ site.title }}</p>
+	<div>
+		<p style="text-align: center; font-family: Lato">{{ site.headline }}</p>
 
-    <ul class="pages">
-      <li><a href="{{ site.baseurl }}/"><i class="fa fa-home"></i> Home</a></li>
-      <li><a href="{{ site.baseurl }}/posts/"><i class="fa fa-archive"></i> All Posts</a></li>
-      <li><a href="{{ site.baseurl }}/search/"><i class="fa fa-search"></i> Search</a></li>
-    </ul>
+		<ul class="pages">
+			<li><a href="{{ site.baseurl }}/"><i class="fa fa-home"></i> Home</a></li>
+			<li><a href="{{ site.baseurl }}/search/"><i class="fa fa-search"></i> Search</a></li>
+			<li>
+				<a href="{{ site.baseurl }}/articles/"><i class="fa fa-archive"></i> Articles</a>
+				<ul>
+					<li><a href="{{ site.baseurl }}/articles/1"><i class="fa fa-archive"></i> Article 1</a></li>
+					<li><a href="{{ site.baseurl }}/articles/2"><i class="fa fa-archive"></i> Article 2</a></li>
+				</ul>
+			</li>
+			<li><a href="{{ site.baseurl }}/tips/"><i class="fa fa-archive"></i> Tips</a></li>
+			<li><a href="{{ site.baseurl }}/solutions/"><i class="fa fa-archive"></i> Programming solutions</a></li>
+			<li><a href="{{ site.baseurl }}/about/"><i class="fa fa-archive"></i> About</a></li>
+		</ul>
 
-    {% include social_links.html %}
-  </div>
+		{% include social_links.html %}
+	</div>
 </nav>
 <div class="menu-button" href="#menu"><i class="fa fa-bars"></i></div>

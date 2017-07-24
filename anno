@@ -1,0 +1,51 @@
+URLs
+----
+
+likeninja
+digitalstate
+digitalpark
+
+sparkhub
+sparkninja
+sparksymphony
+sparksignals
+sparksignals.io
+
+sparkest.ninja
+
+signalsymphony
+
+
+Colors
+------
+
+/* Orange shades */
+$orange-lighter:#ffc129;
+$orange-light:	#ffa302;
+$orange-strong:	#f07100;
+$orange-vivid:	#ff8502;
+$orange-gold:	#fdb301;
+$orange-bold:	#c13207;
+
+/* Blue shades */
+$blue-darker:	#1b8578;
+$blue-dark:		#2da596;
+$blue-ocean:	#40b6a7;
+$blue-lighter:	#50d2c2;
+$blue-vivid:	#097de0;
+
+/* Red shades */
+$red-darker:	#90242a;
+$red-bold:		#ae000a;
+$red-strong:	#e71420;
+$red-vivid:		#e00909;
+$red-light:		#ce202a;
+$red-lighter:	#fb2632;
+
+/* Light */
+$magenta-light:	#e0099e;
+$purple-light:	#b509e0;
+$cyan-light:	#09e0d6;
+$green-light:	#34e009;
+$lemmon-light:	#b5e009;
+$yellow-light:	#e0e009;

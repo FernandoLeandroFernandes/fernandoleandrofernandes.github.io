@@ -1,14 +1,13 @@
 # Site settings
-author: "Fernando Fernandes"
-title: "SparkTalks"
-headline: "SparkTalks <small><em>by Fernando Fernandes</em></small>"
-title_description: "Sharing spark <em>coding & tecnology</em> thoughts"
-title_image: "images/spark-icon.png"
+title: "GoSpark"
+headline: "<i class=\"fa fa-signal\" aria-hidden=\"true\"></i><strong> GoSpark</strong> for coding works"
 email: go@sparksignals.com
-description: "A personal blog to share some interesting thoughts on tecnhnology and coding"
+description: "A sparkling start for bright coding works"
 baseurl: ""
-url: "http://fernandoleandrofernandes.github.io/"
-google_analytics: "UA-?????-?"
+url: "http://gospark.org/"
+title_description: "A cool page to <strong>share</strong> some interesting <span style=\"font-family: 'Anonymous Pro'\">coding</span> <strong>experiences</strong>"
+title_image: "images/spark-icon.png"
+google_analytics: "UA-20365477-4"
 disqus_account: sparkguy
 github_repository: https://github.com/fernandoleandrofernandes/gospark
 addthis_id: ra-513c6fa83da6ec67
@@ -19,7 +18,7 @@ twitter_username:
 github_username:  fernandoleandrofernandes
 instagram_username: 
 reddit_username: 
-linkedin_link: https://www.linkedin.com/in/fernando-fernandes-developer/
+linkedin_link: http://gospark.org/
 google_plus_link: http://gospark.org/
 stackoverflow_link: http://gospark.org/
 xing_link:
