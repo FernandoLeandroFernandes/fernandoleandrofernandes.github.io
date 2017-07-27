@@ -9,60 +9,72 @@
 	</small>
 </div>
 
-<!-- script src="//code.jquery.com/jquery-1.11.0.min.js"></script -->
-<script src="{{ site.baseurl }}/js/jquery-3.2.1.min.js"></script>
-<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-<script src="{{ site.baseurl }}/js/jquery.mmenu.min.all.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.7/highlight.min.js"></script>
+<!-- <script src="{{ site.baseurl }}/js/jquery-1.11.0.min.js"></script -->
+<!-- <script src="{{ site.baseurl }}/js/jquery-3.2.1.min.js"></script> -->
+<script src="{{ site.baseurl }}/js/jquery-1.12.4.min.js"></script>
+<script src="{{ site.baseurl }}/js/bootstrap-3.1.1.min.js"></script>
+<script src="{{ site.baseurl }}/js/jquery.mmenu-6.1.2.all.js"></script>
+<script src="{{ site.baseurl }}/js/highlight-9.12.0.min.js"></script>
 
 <script>hljs.initHighlightingOnLoad();</script>
+
 <script type="text/javascript">
-	 // $(document).ready(function() {
 	 	
 	 jQuery(document).ready(function( $ ) {
 			
-			$("#my-menu")
-				.mmenu()
-				.on( "closed.mm", function() {
-					$(".menu-button").show();
-				 });
+			$("#mainmenu").mmenu(
+				{
+				"extensions": [
+					"fx-menu-zoom",
+					"pagedim-black",
+					"theme-dark"
+				],
+				"counters": true,
+				"navbars": [
+					{
+						"position": "top",
+						"content": [ "searchfield" ]
+					},
+					{
+						"position": "top"
+					},
+					{
+						"position": "bottom",
+						"content": [
+								"<a class='fa fa-envelope' href='#/'></a>",
+								"<a class='fa fa-twitter' href='#/'></a>",
+								"<a class='fa fa-facebook' href='#/'></a>"
+						]
+					}
+				]
 
-			$(".menu-button").click(function() {
-				$(".menu-button").hide();
-				$("#my-menu").trigger("open.mm");
+				},
+				{
+					"divider": "None"
+				}
+			);
+
+			var $mainmenu = $("#mainmenu").data('mmenu');
+
+			var $hamburger = $("#hamburger");
+
+			$hamburger.on( "click", function() {
+				 $mainmenu.open();
+			});
+
+			$mainmenu.bind( "open:finish", function() {
+				 setTimeout(function() {
+						$hamburger.addClass( "is-active" );
+				 }, 20);
+			});
+			$mainmenu.bind( "close:finish", function() {
+				 setTimeout(function() {
+						$hamburger.removeClass( "is-active" );
+				 }, 20);
 			});
 
 
-			$("#my-menu").mmenu({
-							 "extensions": [
-									"fx-menu-zoom",
-									"fx-panels-zoom",
-									"pagedim-black",
-									"theme-dark"
-							 ],
-							 "counters": true,
-							 "navbars": [
-									{
-										 "position": "top",
-										 "content": [
-												"searchfield"
-										 ]
-									},
-									{
-										 "position": "top"
-									},
-									{
-										 "position": "bottom",
-										 "content": [
-												"<a class='fa fa-envelope' href='#/'></a>",
-												"<a class='fa fa-twitter' href='#/'></a>",
-												"<a class='fa fa-facebook' href='#/'></a>"
-										 ]
-									}
-							 ]
-						});
-
-	 });
+		});
 </script>
 
 {% if page.make-smaller-titles %}

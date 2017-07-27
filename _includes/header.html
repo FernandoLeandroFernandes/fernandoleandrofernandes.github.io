@@ -1,23 +1,44 @@
-<nav id="my-menu">
+<nav id="mainmenu">
 	<div>
 		<p style="text-align: center; font-family: Lato">{{ site.headline }}</p>
 
 		<ul class="pages">
 			<li><a href="{{ site.baseurl }}/"><i class="fa fa-home"></i> Home</a></li>
-			<li><a href="{{ site.baseurl }}/search/"><i class="fa fa-search"></i> Search</a></li>
+			<li><a href="{{ site.baseurl }}/search"><i class="fa fa-search"></i> Search</a></li>
 			<li>
-				<a href="{{ site.baseurl }}/articles/"><i class="fa fa-archive"></i> Articles</a>
+				<!-- <a href="{{ site.baseurl }}/articles">Articles</a> -->
+				<span>Articles</span>
+
 				<ul>
+				{% for article in site.articles %}
+				{% capture this_year %}{{ article.date | date: "%Y" }}{% endcapture %}
+				{% capture next_year %}{{ article.previous.date | date: "%Y" }}{% endcapture %}
+					<li><a href="{{ article.url | prepend: site.baseurl }}">{{ article.title }}</a></li>
+				{% endfor %}
+
+
+<!-- 				<ul>
 					<li><a href="{{ site.baseurl }}/articles/1"><i class="fa fa-archive"></i> Article 1</a></li>
 					<li><a href="{{ site.baseurl }}/articles/2"><i class="fa fa-archive"></i> Article 2</a></li>
+ -->
 				</ul>
+
 			</li>
-			<li><a href="{{ site.baseurl }}/tips/"><i class="fa fa-archive"></i> Tips</a></li>
-			<li><a href="{{ site.baseurl }}/solutions/"><i class="fa fa-archive"></i> Programming solutions</a></li>
-			<li><a href="{{ site.baseurl }}/about/"><i class="fa fa-archive"></i> About</a></li>
+			<li><a href="{{ site.baseurl }}/tips"><i class="fa fa-archive"></i> Tips</a></li>
+			<li><a href="{{ site.baseurl }}/solutions"><i class="fa fa-archive"></i> Programming solutions</a></li>
+			<li><a href="{{ site.baseurl }}/about"><i class="fa fa-archive"></i> About</a></li>
 		</ul>
 
 		{% include social_links.html %}
 	</div>
 </nav>
+
 <div class="menu-button" href="#menu"><i class="fa fa-bars"></i></div>
+
+<div class="menu-button">
+	<div id="hamburger" class="hamburger hamburger--emphatic-r">
+		<span class="hamburger-box">
+			<span class="hamburger-inner"></span>
+		</span>
+	</div> 
+</div>

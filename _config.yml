@@ -6,22 +6,22 @@ title_description: "Sharing spark <em>coding & tecnology</em> thoughts"
 title_image: "images/spark-icon.png"
 email: go@sparksignals.com
 description: "A personal blog to share some interesting thoughts on tecnhnology and coding"
-baseurl: ""
+baseurl: 
 url: "http://fernandoleandrofernandes.github.io/"
-google_analytics: "UA-?????-?"
+google_analytics: 
 disqus_account: sparkguy
-github_repository: https://github.com/fernandoleandrofernandes/gospark
+github_repository: https://github.com/fernandoleandrofernandes
 addthis_id: ra-513c6fa83da6ec67
 post_limit: 5
 
 # Social usernames/URLs
 twitter_username: 
-github_username:  fernandoleandrofernandes
+github_username: fernandoleandrofernandes
 instagram_username: 
 reddit_username: 
 linkedin_link: https://www.linkedin.com/in/fernando-fernandes-developer/
-google_plus_link: http://gospark.org/
-stackoverflow_link: http://gospark.org/
+google_plus_link:
+stackoverflow_link:
 xing_link:
 facebook_link:
 
@@ -37,5 +37,90 @@ kramdown:
   input: GFM
   syntax_highlighter: rouge
 
-permalink: pretty
-exclude: [vendor]
+####################################################################################################################
+
+permalink: /:categories/:title/
+
+include:
+
+exclude:
+- bin
+- config.rb
+- Gemfile
+- Gemfile.lock
+- gems
+- Procfile
+- Rakefile
+- README.md
+- script
+- vendor
+
+plugins:
+- jekyll-paginate
+- jekyll-sitemap
+- jekyll-gist
+- jekyll-feed
+- jemoji
+
+
+# For Atom Feed
+domain: fernandoleandrofernandes.github.com
+author: Fernando Fernandes
+email: leandes@gmail.com
+
+
+# Site Settings
+locale                   : "en-US"
+
+# Keep original, do not replace
+title_separator          : "-"
+name                     : "Fernando Fernandes GitHub Profile"
+gh_repo                  :
+teaser                   : # filename of teaser fallback teaser image placed in /images/, .e.g. "500x300.png"
+breadcrumbs              : true # true, false (default)
+words_per_minute         : 200
+comments:
+  provider               : # false (default), "disqus", "discourse", "facebook", "google-plus", custom"
+  disqus:
+    shortname            : # https://help.disqus.com/customer/portal/articles/466208-what-s-a-shortname-
+  discourse:
+    server               : # https://meta.discourse.org/t/embedding-discourse-comments-via-javascript/31963 , e.g.: meta.discourse.org
+  facebook:
+    # https://developers.facebook.com/docs/plugins/comments
+    appid                :
+    num_posts            : # 5 (default)
+    colorscheme          : # "light" (default), "dark"
+
+analytics:
+  provider               : google # false (default), "google", "google-universal", "custom"
+  google:
+    tracking_id          : 
+
+markdown_ext: "markdown,mkdown,mkdn,mkd,md"
+
+# Conversion
+markdown: kramdown
+highlighter: rouge
+lsi: false
+excerpt_separator: "\n\n"
+incremental: false
+
+# standard jekyll configuration
+
+parentsite: https://services.github.com
+
+
+collections:
+  articles:
+    output: true
+  modules:
+    output: true
+  courses:
+    output: true
+
+sass:
+  sass_dir: _sass
+  style: :compressed
+
+# Custom site configuration
+lang: en
