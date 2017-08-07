@@ -4,10 +4,21 @@
 
 		<ul class="pages">
 			<li><a href="{{ site.baseurl }}/"><i class="fa fa-home"></i> Home</a></li>
-			<li><a href="{{ site.baseurl }}/search"><i class="fa fa-search"></i> Search</a></li>
+			<!-- <li><a href="{{ site.baseurl }}/search"><i class="fa fa-search"></i> Search</a></li> -->
 			<li>
-				<!-- <a href="{{ site.baseurl }}/articles">Articles</a> -->
-				<span>Articles</span>
+				<span><i class="fa fa-quote-right"></i>Thoughts</span>
+
+				<ul>
+				{% for post in site.posts %}
+				{% capture this_year %}{{ post.date | date: "%Y" }}{% endcapture %}
+				{% capture next_year %}{{ post.previous.date | date: "%Y" }}{% endcapture %}
+					<li><a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a></li>
+				{% endfor %}
+				</ul>
+			</li>
+			
+			<li>
+				<span><i class="fa fa-file-text"></i>Articles</span>
 
 				<ul>
 				{% for article in site.articles %}
@@ -15,18 +26,34 @@
 				{% capture next_year %}{{ article.previous.date | date: "%Y" }}{% endcapture %}
 					<li><a href="{{ article.url | prepend: site.baseurl }}">{{ article.title }}</a></li>
 				{% endfor %}
-
-
-<!-- 				<ul>
-					<li><a href="{{ site.baseurl }}/articles/1"><i class="fa fa-archive"></i> Article 1</a></li>
-					<li><a href="{{ site.baseurl }}/articles/2"><i class="fa fa-archive"></i> Article 2</a></li>
- -->
 				</ul>
-
 			</li>
-			<li><a href="{{ site.baseurl }}/tips"><i class="fa fa-archive"></i> Tips</a></li>
-			<li><a href="{{ site.baseurl }}/solutions"><i class="fa fa-archive"></i> Programming solutions</a></li>
-			<li><a href="{{ site.baseurl }}/about"><i class="fa fa-archive"></i> About</a></li>
+			
+			<li>
+				<span><i class="fa fa-asterisk"></i>Tech tips</span>
+
+				<ul>
+				{% for tip in site.tips %}
+				{% capture this_year %}{{ tip.date | date: "%Y" }}{% endcapture %}
+				{% capture next_year %}{{ tip.previous.date | date: "%Y" }}{% endcapture %}
+					<li><a href="{{ tip.url | prepend: site.baseurl }}">{{ tip.title }}</a></li>
+				{% endfor %}
+				</ul>
+			</li>
+
+			<li>
+				<span><i class="fa fa-code"></i>Coding challenges</span>
+
+				<ul>
+				{% for coding in site.codings %}
+				{% capture this_year %}{{ coding.date | date: "%Y" }}{% endcapture %}
+				{% capture next_year %}{{ coding.previous.date | date: "%Y" }}{% endcapture %}
+					<li><a href="{{ coding.url | prepend: site.baseurl }}">{{ coding.title }}</a></li>
+				{% endfor %}
+				</ul>
+			</li>
+			
+			<li><a href="{{ site.baseurl }}/about"><i class="fa fa-child"></i> About</a></li>
 		</ul>
 
 		{% include social_links.html %}

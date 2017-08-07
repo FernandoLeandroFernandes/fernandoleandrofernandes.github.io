@@ -113,9 +113,9 @@ parentsite: https://services.github.com
 collections:
   articles:
     output: true
-  modules:
+  codings:
     output: true
-  courses:
+  tips:
     output: true
 
 sass:
